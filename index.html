@@ -16,12 +16,12 @@
     <div class="page-bg"></div>
     <main class="layout">
       <header class="top-nav">
-        <nav class="left-nav">
+        <nav class="left-nav" aria-label="Primary">
           <span class="brand-icon">🎮</span>
-          <a href="#">Home</a>
-          <a href="#">OzRust</a>
-          <a href="#">RustyGoose</a>
-          <a href="#">Goose FAQ</a>
+          <button class="tab-link is-active" data-tab="home">Home</button>
+          <button class="tab-link" data-tab="ozrust">OzRust</button>
+          <button class="tab-link" data-tab="rustygoose">RustyGoose</button>
+          <button class="tab-link" data-tab="faq">Goose FAQ</button>
         </nav>
 
         <div class="logo-block">NETHERPUNCH</div>
@@ -32,102 +32,88 @@
         </div>
       </header>
 
-      <section class="hero">
-        <div class="hero-overlay">
-          <p class="hero-kicker">Welcome to</p>
-          <h1>NetherPunch Gaming</h1>
-          <p class="hero-subtitle">The home of OzRust and RustyGoose</p>
-        </div>
+      <section class="tab-panel is-active" data-panel="home">
+        <section class="hero">
+          <div class="hero-overlay">
+            <p class="hero-kicker">Welcome to</p>
+            <h1>NetherPunch Gaming</h1>
+            <p class="hero-subtitle">The home of OzRust and RustyGoose</p>
+          </div>
+        </section>
+
+        <section class="feature-cards">
+          <article class="info-card"><div><h2>OzRust</h2><p>Join the beloved OzRust servers based in Australia.</p></div></article>
+          <article class="info-card"><div><h2>RustyGoose</h2><p>Explore RustyGoose, our special custom gaming experience.</p></div></article>
+          <article class="info-card"><div><h2>Goose FAQ</h2><p>Get answers to frequently asked questions about our services.</p></div></article>
+        </section>
+
+        <section class="products">
+          <div class="section-title-row"><h3>Monthly Kit Subscriptions</h3><button class="btn btn-ghost small">See all</button></div>
+          <div class="server-kit-grid">
+            <section class="server-kits">
+              <h4>OzRust Kits</h4>
+              <div class="product-grid">
+                <article class="product-card"><img src="https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1000&q=80" alt="OzRust starter kit" /><div class="product-content"><p class="product-name">OzRust Starter Kit Subscription</p><div class="product-row"><p class="price">$19.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
+                <article class="product-card"><img src="https://images.unsplash.com/photo-1517976487492-576ea6b2936d?auto=format&fit=crop&w=1000&q=80" alt="OzRust raider kit" /><div class="product-content"><p class="product-name">OzRust Raider Kit Subscription</p><div class="product-row"><p class="price">$29.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
+              </div>
+            </section>
+            <section class="server-kits">
+              <h4>RustyGoose Kits</h4>
+              <div class="product-grid">
+                <article class="product-card"><img src="https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose survivor kit" /><div class="product-content"><p class="product-name">RustyGoose Survivor Kit Subscription</p><div class="product-row"><p class="price">$24.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
+                <article class="product-card"><img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose elite kit" /><div class="product-content"><p class="product-name">RustyGoose Elite Kit Subscription</p><div class="product-row"><p class="price">$49.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
+              </div>
+            </section>
+          </div>
+          <p class="footnote">All subscriptions are billed monthly by PayNow.gg, our authorized reseller and official Merchant of Record. They handle subscription billing, payments, and fulfilment.</p>
+        </section>
       </section>
 
-      <section class="feature-cards">
-        <article class="info-card">
-          <div>
-            <h2>OzRust</h2>
-            <p>Join the beloved OzRust servers based in Australia.</p>
+      <section class="tab-panel" data-panel="ozrust">
+        <section class="subpage">
+          <h3>OzRust</h3>
+          <p class="subpage-copy">Dedicated OzRust kits, queue perks, and wipe-day essentials for Australian survivors.</p>
+          <div class="product-grid">
+            <article class="product-card"><img src="https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1000&q=80" alt="OzRust kit" /><div class="product-content"><p class="product-name">OzRust Solo Kit</p><div class="product-row"><p class="price">$19.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
+            <article class="product-card"><img src="https://images.unsplash.com/photo-1517976487492-576ea6b2936d?auto=format&fit=crop&w=1000&q=80" alt="OzRust kit" /><div class="product-content"><p class="product-name">OzRust Clan Kit</p><div class="product-row"><p class="price">$35.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
           </div>
-        </article>
-        <article class="info-card">
-          <div>
-            <h2>RustyGoose</h2>
-            <p>Explore RustyGoose, our special custom gaming experience.</p>
-          </div>
-        </article>
-        <article class="info-card">
-          <div>
-            <h2>Goose FAQ</h2>
-            <p>Get answers to frequently asked questions about our services.</p>
-          </div>
-        </article>
+        </section>
       </section>
 
-      <section class="products">
-        <div class="section-title-row">
-          <h3>Monthly Kit Subscriptions</h3>
-          <button class="btn btn-ghost small">See all</button>
-        </div>
+      <section class="tab-panel" data-panel="rustygoose">
+        <section class="subpage">
+          <h3>RustyGoose</h3>
+          <p class="subpage-copy">Custom RustyGoose progression kits with extra quality-of-life boosts and event access.</p>
+          <div class="product-grid">
+            <article class="product-card"><img src="https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose kit" /><div class="product-content"><p class="product-name">RustyGoose Survivor Kit</p><div class="product-row"><p class="price">$24.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
+            <article class="product-card"><img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose kit" /><div class="product-content"><p class="product-name">RustyGoose Elite Kit</p><div class="product-row"><p class="price">$49.00/mo</p><button class="btn btn-ghost small">Subscribe now</button></div></div></article>
+          </div>
+        </section>
+      </section>
 
-        <div class="server-kit-grid">
-          <section class="server-kits">
-            <h4>OzRust Kits</h4>
-            <div class="product-grid">
-              <article class="product-card">
-                <img src="https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1000&q=80" alt="OzRust starter kit" />
-                <div class="product-content">
-                  <p class="product-name">OzRust Starter Kit Subscription</p>
-                  <div class="product-row">
-                    <p class="price">$19.00/mo</p>
-                    <button class="btn btn-ghost small">Subscribe now</button>
-                  </div>
-                </div>
-              </article>
-
-              <article class="product-card">
-                <img src="https://images.unsplash.com/photo-1517976487492-576ea6b2936d?auto=format&fit=crop&w=1000&q=80" alt="OzRust raider kit" />
-                <div class="product-content">
-                  <p class="product-name">OzRust Raider Kit Subscription</p>
-                  <div class="product-row">
-                    <p class="price">$29.00/mo</p>
-                    <button class="btn btn-ghost small">Subscribe now</button>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </section>
-
-          <section class="server-kits">
-            <h4>RustyGoose Kits</h4>
-            <div class="product-grid">
-              <article class="product-card">
-                <img src="https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose survivor kit" />
-                <div class="product-content">
-                  <p class="product-name">RustyGoose Survivor Kit Subscription</p>
-                  <div class="product-row">
-                    <p class="price">$24.00/mo</p>
-                    <button class="btn btn-ghost small">Subscribe now</button>
-                  </div>
-                </div>
-              </article>
-
-              <article class="product-card">
-                <img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose elite kit" />
-                <div class="product-content">
-                  <p class="product-name">RustyGoose Elite Kit Subscription</p>
-                  <div class="product-row">
-                    <p class="price">$49.00/mo</p>
-                    <button class="btn btn-ghost small">Subscribe now</button>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </section>
-        </div>
-
-        <p class="footnote">
-          All subscriptions are billed monthly by PayNow.gg, our authorized reseller and official Merchant of Record.
-          They handle subscription billing, payments, and fulfilment.
-        </p>
+      <section class="tab-panel" data-panel="faq">
+        <section class="subpage">
+          <h3>Goose FAQ</h3>
+          <div class="faq-list">
+            <article class="faq-item"><h4>How does billing work?</h4><p>All kits are billed monthly and can be cancelled before the next cycle.</p></article>
+            <article class="faq-item"><h4>Can I switch servers later?</h4><p>Yes, you can upgrade or move between OzRust and RustyGoose plans at any time.</p></article>
+            <article class="faq-item"><h4>When are perks delivered?</h4><p>Perks are applied automatically on login after successful billing.</p></article>
+          </div>
+        </section>
       </section>
     </main>
+
+    <script>
+      const links = document.querySelectorAll('.tab-link');
+      const panels = document.querySelectorAll('.tab-panel');
+
+      links.forEach((link) => {
+        link.addEventListener('click', () => {
+          const key = link.dataset.tab;
+          links.forEach((item) => item.classList.toggle('is-active', item === link));
+          panels.forEach((panel) => panel.classList.toggle('is-active', panel.dataset.panel === key));
+        });
+      });
+    </script>
   </body>
 </html>
