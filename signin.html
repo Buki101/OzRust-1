@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In | NetherPunch Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/public/css/signin.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout signin-layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <span class="brand-icon">🎮</span>
+          <a href="/">Home</a>
+        </nav>
+        <div class="logo-block">NETHERPUNCH</div>
+        <div class="right-nav"></div>
+      </header>
+
+      <section class="signin-shell">
+        <h1>Sign in required</h1>
+        <p class="signin-copy">You need to sign in before using subscriptions, the leaderboard, or player pages.</p>
+
+        <form id="signinForm" class="signin-form">
+          <label>
+            Username
+            <input id="username" name="username" autocomplete="username" required />
+          </label>
+          <label>
+            Password
+            <input id="password" type="password" name="password" autocomplete="current-password" required />
+          </label>
+          <button class="btn btn-ghost" type="submit">Sign in</button>
+        </form>
+
+        <p id="signinStatus" class="signin-status"></p>
+      </section>
+    </main>
+
+    <script src="/public/js/signin.js"></script>
+  </body>
+</html>

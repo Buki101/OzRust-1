@@ -51,6 +51,11 @@ async function loadPlayer() {
 
   try {
     const response = await fetch(`/api/player/${encodeURIComponent(steamId)}`);
+    if (response.status === 401) {
+      window.location.href = `/signin?next=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
       throw new Error(errorBody.error || 'Request failed');

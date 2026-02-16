@@ -304,6 +304,11 @@ h3 {
   line-height: 1;
 }
 
+.product-content .subscribe-btn {
+  text-decoration: none;
+  width: 100%;
+}
+
 .price {
   margin: 0;
   font-size: 21px;

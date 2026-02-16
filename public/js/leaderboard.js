@@ -59,6 +59,11 @@ async function loadLeaderboard(stat) {
 
   try {
     const response = await fetch(`/api/leaderboard?stat=${encodeURIComponent(stat)}&limit=50`);
+    if (response.status === 401) {
+      window.location.href = `/signin?next=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+
     if (!response.ok) throw new Error('Request failed');
 
     const data = await response.json();

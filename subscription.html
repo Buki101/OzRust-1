@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subscription | NetherPunch Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/public/css/subscription.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout subscription-layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <span class="brand-icon">🎮</span>
+          <a href="/">Back to home</a>
+        </nav>
+        <div class="logo-block">NETHERPUNCH</div>
+        <div class="right-nav"></div>
+      </header>
+
+      <section class="subscription-shell" id="subscriptionShell" hidden>
+        <div class="subscription-media-wrap">
+          <img id="kitImage" class="subscription-media" src="" alt="" />
+        </div>
+
+        <article class="subscription-content">
+          <p class="subscription-tag" id="kitServer"></p>
+          <h1 id="kitTitle"></h1>
+          <p id="kitDescription" class="subscription-description"></p>
+
+          <div class="subscription-price-row">
+            <p class="subscription-price" id="kitPrice"></p>
+            <button class="btn btn-ghost" id="addToCartBtn">Add to cart</button>
+          </div>
+
+          <h2>What this kit includes</h2>
+          <ul id="kitIncludes" class="subscription-includes"></ul>
+
+          <p class="subscription-note">Subscription renews monthly. Cancel anytime from your account portal.</p>
+        </article>
+      </section>
+
+      <p id="subscriptionStatus" class="subscription-status">Loading subscription...</p>
+    </main>
+
+    <script src="/public/js/subscription.js"></script>
+  </body>
+</html>
