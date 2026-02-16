@@ -246,6 +246,10 @@ h3 {
   margin-top: 10px;
 }
 
+.single-server-grid {
+  grid-template-columns: 1fr;
+}
+
 .server-kits {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
@@ -269,6 +273,13 @@ h3 {
 
 .ozrust-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1380px) {
+  .ozrust-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .product-card {
