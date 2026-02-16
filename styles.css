@@ -39,6 +39,8 @@ body {
   width: min(1120px, 95vw);
   margin: 18px auto;
   border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
   background: rgba(4, 10, 20, 0.76);
   backdrop-filter: blur(4px);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
@@ -106,7 +108,7 @@ body {
   letter-spacing: 0.06em;
   font-size: 10px;
   padding: 7px 12px;
-  border-radius: 3px;
+  border-radius: 10px;
 }
 
 .btn.small {
@@ -117,7 +119,7 @@ body {
 .btn-circle {
   width: 27px;
   height: 27px;
-  border-radius: 50%;
+  border-radius: 999px;
   padding: 0;
 }
 
@@ -173,7 +175,7 @@ h1 {
 .info-card {
   min-height: 95px;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 14px;
   background: linear-gradient(180deg, rgba(20, 26, 37, 0.78), rgba(10, 13, 21, 0.86));
   padding: 14px;
   display: flex;
@@ -196,13 +198,14 @@ h1 {
 .info-link {
   text-decoration: none;
   color: inherit;
-  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
 .info-link:hover {
   transform: translateY(-2px);
   border-color: rgba(129, 176, 246, 0.45);
   background: linear-gradient(180deg, rgba(24, 34, 51, 0.88), rgba(11, 16, 27, 0.9));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
 
@@ -228,7 +231,7 @@ h3 {
 
 .server-kits {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 16px;
   background: rgba(8, 14, 24, 0.55);
   padding: 10px;
 }
@@ -248,7 +251,7 @@ h3 {
 
 .product-card {
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 14px;
   overflow: hidden;
   background: rgba(8, 14, 24, 0.9);
   display: flex;
@@ -262,6 +265,8 @@ h3 {
   height: 130px;
   object-fit: cover;
   display: block;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
 }
 
 
@@ -327,7 +332,7 @@ h3 {
 
 .faq-item {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 16px;
   background: rgba(8, 14, 24, 0.75);
   padding: 12px;
 }
