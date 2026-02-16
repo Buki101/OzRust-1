@@ -9,37 +9,45 @@ const kitIncludes = document.getElementById('kitIncludes');
 const addToCartBtn = document.getElementById('addToCartBtn');
 
 const kits = {
-  'ozrust-starter': {
+  'ozrust-quarry': {
     server: 'OzRust',
-    title: 'OzRust Starter Kit Subscription',
-    description: 'A balanced monthly kit for reliable early wipe progression and smooth base setup.',
-    price: '$19/mo',
-    image: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Metal tools starter loadout', 'Building resource bundle', 'Protection consumables', 'Queue priority during peak hours']
-  },
-  'ozrust-raider': {
-    server: 'OzRust',
-    title: 'OzRust Raider Kit Subscription',
-    description: 'Built for aggressive teams that need fast access to raid-ready progression every month.',
-    price: '$29/mo',
+    title: 'Quarry Kit',
+    description: 'Reliable entry tier with the essentials for quick progression and cleaner early-game momentum.',
+    price: '8.00 USD',
     image: 'https://images.unsplash.com/photo-1517976487492-576ea6b2936d?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Explosives progression package', 'Advanced armor set', 'Weapon utility cache', 'Raid support crate each cycle']
+    includes: ['Starter weapon bundle', 'Basic armor and meds', 'Early wipe farming stack', 'Quick deploy resources']
   },
-  'rustygoose-survivor': {
-    server: 'RustyGoose',
-    title: 'RustyGoose Survivor Kit Subscription',
-    description: 'A dependable monthly plan for solo and duo players focused on survival consistency.',
-    price: '$24/mo',
-    image: 'https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Solo/duo weapon bundle', 'Med and food supply pack', 'Base defense starter stack', 'Monthly utility refill']
+  'ozrust-crocodile': {
+    server: 'OzRust',
+    title: 'Crocodile Kit',
+    description: 'A stronger all-rounder kit for players who want a confident advantage going into contested zones.',
+    price: '20.00 USD',
+    image: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1200&q=80',
+    includes: ['Mid-tier combat loadout', 'Improved armor setup', 'Raid utility starter pack', 'Expanded ammo allocation']
   },
-  'rustygoose-elite': {
-    server: 'RustyGoose',
-    title: 'RustyGoose Elite Kit Subscription',
-    description: 'Top-tier monthly kit built for high-tempo clans and competitive wipe pushes.',
-    price: '$49/mo',
+  'ozrust-shark': {
+    server: 'OzRust',
+    title: 'Shark Kit',
+    description: 'Aggressive combat-focused kit for players pushing monuments and high-pressure fights.',
+    price: '15.00 USD',
     image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Elite armor and utility gear', 'Premium explosives allocation', 'Endgame ammo and meds', 'Priority support fulfilment']
+    includes: ['PvP-oriented weapon set', 'Advanced healing supplies', 'Explosive support items', 'Mobility-focused utility']
+  },
+  'ozrust-wallaby': {
+    server: 'OzRust',
+    title: 'Wallaby Kit',
+    description: 'Balanced utility kit designed for dependable roaming, farming, and base sustain.',
+    price: '10.00 USD',
+    image: 'https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1200&q=80',
+    includes: ['Roaming weapon tools', 'Resource and component bundle', 'Base defense essentials', 'Stacked med supplies']
+  },
+  'ozrust-bilby': {
+    server: 'OzRust',
+    title: 'Bilby Kit',
+    description: 'Budget-friendly starter option for fast reset recovery and low-risk gameplay loops.',
+    price: '5.00 USD',
+    image: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80',
+    includes: ['Starter tools and meds', 'Basic base materials', 'Food and utility items', 'Low-cost combat backup']
   }
 };
 
@@ -74,7 +82,7 @@ addToCartBtn.addEventListener('click', () => {
 
 const kit = kits[getKitId()];
 if (!kit) {
-  statusEl.textContent = 'Subscription not found.';
+  statusEl.textContent = 'Kit not found.';
 } else {
   renderKit(kit);
 }

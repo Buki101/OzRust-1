@@ -267,6 +267,10 @@ h3 {
   margin-top: 10px;
 }
 
+.ozrust-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .product-card {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
@@ -335,7 +339,15 @@ h3 {
 
 .product-content .subscribe-btn {
   text-decoration: none;
-  width: 100%;
+  min-width: 106px;
+}
+
+.product-price {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f0f4fd;
+  letter-spacing: 0.01em;
 }
 
 .price {
@@ -438,8 +450,19 @@ h3 {
   }
 
   .feature-cards,
-  .product-grid,
   .server-kit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid,
+  .ozrust-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .product-grid,
+  .ozrust-grid {
     grid-template-columns: 1fr;
   }
 }
