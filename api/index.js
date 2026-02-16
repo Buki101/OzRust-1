@@ -241,6 +241,10 @@ app.get('/player/:steamId', requireAuthPage, (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'player.html'));
 });
 
+app.get('/ozrust', requireAuthPage, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'ozrust.html'));
+});
+
 app.get('/subscription/:kitId', requireAuthPage, (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'subscription.html'));
 });
