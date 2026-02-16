@@ -13,25 +13,18 @@ body {
   min-height: 100vh;
   font-family: "Inter", system-ui, sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 22% 18%, #111827 0%, #07090f 42%, #020203 100%);
+  background: #050507;
 }
 
 .page-bg {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 10% 12%, rgba(106, 130, 167, 0.2), transparent 34%),
-    radial-gradient(circle at 82% 78%, rgba(79, 93, 116, 0.18), transparent 38%),
-    radial-gradient(circle at 50% 120%, rgba(24, 28, 35, 0.72), transparent 52%),
-    repeating-linear-gradient(
-      -13deg,
-      rgba(255, 255, 255, 0.022) 0px,
-      rgba(255, 255, 255, 0.022) 1px,
-      transparent 1px,
-      transparent 5px
-    ),
-    linear-gradient(180deg, #0c1018 0%, #06080d 52%, #020203 100%);
-  filter: contrast(1.06) brightness(0.92);
+    radial-gradient(circle at 16% 14%, rgba(255, 145, 84, 0.16), transparent 34%),
+    radial-gradient(circle at 84% 86%, rgba(163, 73, 43, 0.22), transparent 42%),
+    linear-gradient(180deg, rgba(7, 7, 10, 0.74), rgba(6, 5, 5, 0.9)),
+    url("https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=2200&q=80") center / cover no-repeat;
+  filter: contrast(1.03) saturate(0.95) brightness(0.72);
   z-index: -1;
 }
 
