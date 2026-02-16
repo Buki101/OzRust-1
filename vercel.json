@@ -2,13 +2,7 @@
   "version": 2,
   "functions": {
     "server.js": {
-      "includeFiles": [
-        "index.html",
-        "leaderboard.html",
-        "player.html",
-        "styles.css",
-        "public/**"
-      ]
+      "includeFiles": "**/*"
     }
   },
   "routes": [
