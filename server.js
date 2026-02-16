@@ -124,9 +124,13 @@ app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://0.0.0.0:${port}`);
-});
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  app.listen(port, () => {
+    console.log(`Server running on http://0.0.0.0:${port}`);
+  });
+}
 
 // Suggested MariaDB indexes for performance:
 // CREATE INDEX idx_pvpkills ON playerranksdb (PVPKills DESC);
