@@ -1,14 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "**/*"
-      }
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "**/*"
     }
-  ],
+  },
   "routes": [
     { "src": "/(.*)", "dest": "api/index.js" }
   ]

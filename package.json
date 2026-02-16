@@ -6,7 +6,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "check:vercel-config": "node scripts/validate-vercel-config.js"
   },
   "dependencies": {
     "express": "^4.21.2",
