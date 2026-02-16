@@ -65,16 +65,20 @@ body {
   justify-content: flex-end;
 }
 
+.left-nav a,
 .left-nav .tab-link {
   color: #eaf0ff;
   text-decoration: none;
   text-transform: uppercase;
   font-size: 11px;
   letter-spacing: 0.06em;
-  opacity: 0.88;
+  opacity: 0.9;
   background: transparent;
   border: 0;
   padding: 0;
+}
+
+.left-nav .tab-link {
   cursor: pointer;
 }
 
