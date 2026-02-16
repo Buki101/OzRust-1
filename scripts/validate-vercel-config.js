@@ -3,13 +3,23 @@ const fs = require('fs');
 const raw = fs.readFileSync('vercel.json', 'utf8');
 const config = JSON.parse(raw);
 
-if (Object.prototype.hasOwnProperty.call(config, 'builds')) {
-  console.error('Invalid vercel.json: top-level "builds" must not be present.');
+if (!Array.isArray(config.builds) || !config.builds.length) {
+  console.error('Invalid vercel.json: top-level "builds" is required for stable Node deployment.');
   process.exit(1);
 }
 
-if (!config.functions || !config.functions['api/index.js']) {
-  console.error('Invalid vercel.json: functions["api/index.js"] is required.');
+const nodeBuild = config.builds.find(
+  (build) => build.src === 'api/index.js' && build.use === '@vercel/node'
+);
+
+if (!nodeBuild) {
+  console.error('Invalid vercel.json: missing @vercel/node build for api/index.js.');
+  process.exit(1);
+}
+
+const includeFiles = nodeBuild.config?.includeFiles;
+if (!includeFiles || typeof includeFiles !== 'string') {
+  console.error('Invalid vercel.json: builds[].config.includeFiles must be a string.');
   process.exit(1);
 }
 
