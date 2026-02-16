@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Netherpunch Sign In',
-  description: 'Premium sign-in surface for Netherpunch.'
+  title: 'Netherpunch',
+  description: 'Netherpunch competitive hub for subscriptions, leaderboards, and player pages.'
 };
 
 export default function RootLayout({ children }) {
