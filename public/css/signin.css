@@ -59,3 +59,25 @@
 .signin-status.success {
   color: #9de0b4;
 }
+
+
+.demo-credentials {
+  margin: 0 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(11, 16, 24, 0.72);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.demo-credentials p {
+  margin: 0 0 8px;
+  color: #cfd9ea;
+  font-size: 13px;
+}
+
+.demo-credentials code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: #f5f8ff;
+}

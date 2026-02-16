@@ -75,9 +75,25 @@ function renderKit(kit) {
   shell.hidden = false;
 }
 
-addToCartBtn.addEventListener('click', () => {
-  addToCartBtn.textContent = 'Added to cart';
+addToCartBtn.addEventListener('click', async () => {
   addToCartBtn.disabled = true;
+  addToCartBtn.textContent = 'Checking sign in...';
+
+  try {
+    const response = await fetch('/api/auth/session', { credentials: 'same-origin' });
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || !payload.signedIn) {
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/signin?next=${next}`;
+      return;
+    }
+
+    addToCartBtn.textContent = 'Added to cart';
+  } catch (_error) {
+    addToCartBtn.textContent = 'Sign in required';
+    addToCartBtn.disabled = false;
+  }
 });
 
 const kit = kits[getKitId()];

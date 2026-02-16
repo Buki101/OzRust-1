@@ -1,3 +1,6 @@
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const useDemoBtn = document.getElementById('useDemoBtn');
 const form = document.getElementById('signinForm');
 const statusEl = document.getElementById('signinStatus');
 
@@ -11,8 +14,8 @@ form.addEventListener('submit', async (event) => {
 
   const formData = new FormData(form);
   const body = {
-    username: String(formData.get('username') || '').trim(),
-    password: String(formData.get('password') || '')
+    username: String(usernameInput.value || formData.get('username') || '').trim(),
+    password: String(passwordInput.value || formData.get('password') || '')
   };
 
   try {
@@ -35,3 +38,12 @@ form.addEventListener('submit', async (event) => {
     statusEl.textContent = error.message || 'Sign in failed.';
   }
 });
+
+if (useDemoBtn) {
+  useDemoBtn.addEventListener('click', () => {
+    usernameInput.value = 'admin';
+    passwordInput.value = 'changeme';
+    statusEl.classList.remove('success');
+    statusEl.textContent = 'Demo credentials populated. Click Sign in.';
+  });
+}
