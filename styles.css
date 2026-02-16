@@ -305,9 +305,18 @@ h3 {
 
 .price {
   margin: 0;
-  font-size: 30px;
+  font-size: 22px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: #eaf2ff;
+}
+
+.price .period {
+  font-size: 0.72em;
+  font-weight: 500;
+  color: #9fb0cc;
+  margin-left: 2px;
 }
 
 .footnote {
