@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaderboard | NetherPunch Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/public/css/leaderboard.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout leaderboard-layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <span class="brand-icon">🎮</span>
+          <a class="tab-link is-active" href="/">Home</a>
+          <a class="tab-link" href="/leaderboard">Leaderboard</a>
+        </nav>
+        <div class="logo-block">NETHERPUNCH</div>
+        <div class="right-nav">
+          <button class="btn btn-ghost">Sign In</button>
+        </div>
+      </header>
+
+      <section class="leaderboard-shell">
+        <div class="leaderboard-head">
+          <h1 class="leaderboard-title">Player Ranks Leaderboard</h1>
+          <label class="leaderboard-select-wrap">
+            <span>Stat</span>
+            <select id="statSelect" class="leaderboard-select"></select>
+          </label>
+        </div>
+
+        <p id="leaderboardStatus" class="leaderboard-status">Loading leaderboard...</p>
+
+        <div class="table-wrap" id="tableWrap" hidden>
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Clan</th>
+                <th>Status</th>
+                <th>Last Seen</th>
+                <th id="valueHeader">Value</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/public/js/leaderboard.js"></script>
+  </body>
+</html>
