@@ -12,10 +12,10 @@ const kits = {
   'ozrust-quarry': {
     server: 'OzRust',
     title: 'Quarry Kit',
-    description: 'Reliable entry tier with the essentials for quick progression and cleaner early-game momentum.',
+    description: 'Utility-focused kit that grants passive resource production value for your wipe progression.',
     price: '8.00 USD',
     image: 'https://images.unsplash.com/photo-1517976487492-576ea6b2936d?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Starter weapon bundle', 'Basic armor and meds', 'Early wipe farming stack', 'Quick deploy resources']
+    includes: ['A Mining Quarry and Pumpjack on OzRust']
   },
   'ozrust-crocodile': {
     server: 'OzRust',
