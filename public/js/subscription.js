@@ -104,26 +104,72 @@ const kits = {
   'rustygoose-chad': {
     server: 'RustyGoose',
     title: 'Chad Kit',
-    description: 'High-tier RustyGoose loadout for dominant roaming and strong monument pressure.',
+    description: 'Strong all-round combat kit with upgraded armor, weapons, and premium mobility perks.',
     price: '30.00 USD',
     image: 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Premium weapon package', 'Advanced armor set', 'Explosives + utility stack', 'Large med and ammo reserve']
+    includes: [
+      '1x SAR + 100x 5.56 ammo',
+      'Boots',
+      '1x SAP + 50x Pistol Bullets',
+      'Metal pickaxe & Metal hatchet',
+      '5x Bandages & 5 Med Pens',
+      'Food',
+      'Coffee can Helm',
+      'Hoodie',
+      'Road Sign Chest plate',
+      'Kilt',
+      'Pants',
+      '5 Second Teleports',
+      '25 /home Teleports per day',
+      '25 /tpr Teleports per day',
+      '4 Minute Teleport Cooldown',
+      '6 Bandit and Outpost Teleports per day',
+      '8 Row Backpack'
+    ]
   },
   'rustygoose-roam': {
     server: 'RustyGoose',
     title: 'Roam Kit',
-    description: 'Balanced roaming kit built for consistent PVP/PVE fights across the map.',
+    description: 'Get out of base and roam with a dependable mid-tier loadout and practical travel perks.',
     price: '15.00 USD',
     image: 'https://images.unsplash.com/photo-1601758260892-ae5f83368a3f?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Roam-ready weapon setup', 'Reliable armor and meds', 'Travel utility gear', 'Resource top-up bundle']
+    includes: [
+      '1x Tompson + 30x Pistol Ammo',
+      '1x Pumpy + 30x Shotgun Rounds',
+      '1x Metal Pickaxe + 1x Metal Hatchet',
+      '5x Bandages + 2x Med Pens',
+      '1x Hazmat Food (5x bear meat 5x cactus flesh)',
+      '10 Second Teleports',
+      '20 /home Teleports per day',
+      '20 /tpr Teleports per day',
+      '6 Minute Teleport Cooldown',
+      '4 Bandit and Outpost Teleports per day',
+      '6 Row Backpack'
+    ]
   },
   'rustygoose-grub': {
     server: 'RustyGoose',
     title: 'The Grub',
-    description: 'Low-cost starter option perfect for resets, snowballs, and budget runs.',
+    description: 'Sneaky budget kit for quick snowballs, early fights, and efficient recovery runs.',
     price: '5.00 USD',
     image: 'https://images.unsplash.com/photo-1563298723-dcfebaa392e3?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Budget weapon + tools', 'Starter meds and food', 'Light utility gear', 'Quick recovery materials']
+    includes: [
+      '1x Revolver & 30x Pistol Bullets',
+      '1x Crossbow & 30x Arrows',
+      '1x Stone Pickaxe',
+      '1x Stone Hatchet',
+      '5x Bandages',
+      'Food (5x Bearmeat 5x Cactus flesh)',
+      '1x T-shirt + 1x Shorts',
+      '1x Poncho',
+      '1x Hide Boots',
+      '10 Second Teleports',
+      '15 /home Teleports per day',
+      '15 /tpr Teleports per day',
+      '8 Minute Teleport Cooldown',
+      '2 Bandit and Outpost Teleports per day',
+      '4 Row Backpack'
+    ]
   },
   'ozrust-bilby': {
     server: 'OzRust',
