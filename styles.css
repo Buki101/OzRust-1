@@ -276,6 +276,11 @@ h3 {
   gap: 12px;
 }
 
+.rustygoose-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
 @media (max-width: 1380px) {
   .ozrust-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -466,14 +471,16 @@ h3 {
   }
 
   .product-grid,
-  .ozrust-grid {
+  .ozrust-grid,
+  .rustygoose-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 720px) {
   .product-grid,
-  .ozrust-grid {
+  .ozrust-grid,
+  .rustygoose-grid {
     grid-template-columns: 1fr;
   }
 }

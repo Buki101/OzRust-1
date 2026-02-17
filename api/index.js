@@ -245,6 +245,10 @@ app.get('/ozrust', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'ozrust.html'));
 });
 
+app.get('/rustygoose', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'rustygoose.html'));
+});
+
 app.get('/subscription/:kitId', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'subscription.html'));
 });

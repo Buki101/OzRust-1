@@ -41,6 +41,31 @@ const kits = {
     image: 'https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1200&q=80',
     includes: ['Roaming weapon tools', 'Resource and component bundle', 'Base defense essentials', 'Stacked med supplies']
   },
+
+  'rustygoose-chad': {
+    server: 'RustyGoose',
+    title: 'Chad Kit',
+    description: 'High-tier RustyGoose loadout for dominant roaming and strong monument pressure.',
+    price: '30.00 USD',
+    image: 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=1200&q=80',
+    includes: ['Premium weapon package', 'Advanced armor set', 'Explosives + utility stack', 'Large med and ammo reserve']
+  },
+  'rustygoose-roam': {
+    server: 'RustyGoose',
+    title: 'Roam Kit',
+    description: 'Balanced roaming kit built for consistent PVP/PVE fights across the map.',
+    price: '15.00 USD',
+    image: 'https://images.unsplash.com/photo-1601758260892-ae5f83368a3f?auto=format&fit=crop&w=1200&q=80',
+    includes: ['Roam-ready weapon setup', 'Reliable armor and meds', 'Travel utility gear', 'Resource top-up bundle']
+  },
+  'rustygoose-grub': {
+    server: 'RustyGoose',
+    title: 'The Grub',
+    description: 'Low-cost starter option perfect for resets, snowballs, and budget runs.',
+    price: '5.00 USD',
+    image: 'https://images.unsplash.com/photo-1563298723-dcfebaa392e3?auto=format&fit=crop&w=1200&q=80',
+    includes: ['Budget weapon + tools', 'Starter meds and food', 'Light utility gear', 'Quick recovery materials']
+  },
   'ozrust-bilby': {
     server: 'OzRust',
     title: 'Bilby Kit',
