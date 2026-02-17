@@ -76,10 +76,29 @@ const kits = {
   'ozrust-wallaby': {
     server: 'OzRust',
     title: 'Wallaby Kit',
-    description: 'Balanced utility kit designed for dependable roaming, farming, and base sustain.',
+    description: 'Affordable balanced kit with strong utility perks and dependable close-range combat gear.',
     price: '10.00 USD',
     image: 'https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Roaming weapon tools', 'Resource and component bundle', 'Base defense essentials', 'Stacked med supplies']
+    includes: [
+      'Hide Armor',
+      'Thompson SMG',
+      '400 Pistol Ammo',
+      '5 Croc Meat',
+      '50 Blueberries',
+      '5 Medical Syringes',
+      '5 Bandages',
+      'Large Billboards Max 3x3',
+      '8 Homes',
+      '10 Second teleport',
+      '6 Backpack Rows',
+      'Workbench Covers Your Entire Base',
+      'Instant Mixing Table',
+      'Quick Sort For Boxes',
+      'Spawn a MiniCopter',
+      'Call a Helicopter',
+      'Sign Artist',
+      'Craft a Lock-On Rocket'
+    ]
   },
 
   'rustygoose-chad': {
