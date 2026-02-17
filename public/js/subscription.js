@@ -20,10 +20,31 @@ const kits = {
   'ozrust-crocodile': {
     server: 'OzRust',
     title: 'Crocodile Kit',
-    description: 'A stronger all-rounder kit for players who want a confident advantage going into contested zones.',
+    description: 'Premium mid-tier combat kit tuned for fast progression and strong roam/defense utility.',
     price: '20.00 USD',
     image: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Mid-tier combat loadout', 'Improved armor setup', 'Raid utility starter pack', 'Expanded ammo allocation']
+    includes: [
+      'Full Metal Armor',
+      'AK / SAP / Pump Action loadout',
+      '400 5.56 Rifle Ammo',
+      '100 Pistol Ammo',
+      '50 Buckshot',
+      '5 Croc Meat',
+      '50 Blueberries',
+      '5 Medical Syringes',
+      '5 Bandages',
+      'Large Billboards Max 3x3',
+      '10 Homes',
+      '10 Second teleport',
+      '7 Backpack Rows',
+      'Workbench Covers Your Entire Base',
+      'Instant Mixing Table',
+      'Quick Sort For Boxes',
+      'Spawn a MiniCopter',
+      'Call a Helicopter',
+      'Sign Artist',
+      'Craft a Lock-On Rocket'
+    ]
   },
   'ozrust-shark': {
     server: 'OzRust',
