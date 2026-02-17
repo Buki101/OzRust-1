@@ -49,10 +49,29 @@ const kits = {
   'ozrust-shark': {
     server: 'OzRust',
     title: 'Shark Kit',
-    description: 'Aggressive combat-focused kit for players pushing monuments and high-pressure fights.',
+    description: 'Combat-forward kit built around reliable mid-tier gunplay and strong utility perks.',
     price: '15.00 USD',
     image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1200&q=80',
-    includes: ['PvP-oriented weapon set', 'Advanced healing supplies', 'Explosive support items', 'Mobility-focused utility']
+    includes: [
+      'Road Sign Armor',
+      'Semi-Automatic Rifle',
+      '300 5.56 Rifle Ammo',
+      '5 Croc Meat',
+      '50 Blueberries',
+      '5 Medical Syringes',
+      '5 Bandages',
+      'Large Billboards Max 3x3',
+      '10 Homes',
+      '10 Second teleport',
+      '6 Backpack Rows',
+      'Workbench Covers Your Entire Base',
+      'Instant Mixing Table',
+      'Quick Sort For Boxes',
+      'Spawn a MiniCopter',
+      'Call a Helicopter',
+      'Sign Artist',
+      'Craft a Lock-On Rocket'
+    ]
   },
   'ozrust-wallaby': {
     server: 'OzRust',
