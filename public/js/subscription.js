@@ -128,10 +128,29 @@ const kits = {
   'ozrust-bilby': {
     server: 'OzRust',
     title: 'Bilby Kit',
-    description: 'Budget-friendly starter option for fast reset recovery and low-risk gameplay loops.',
+    description: 'Entry-level budget kit focused on quick recovery, close-range fights, and core utility perks.',
     price: '5.00 USD',
     image: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80',
-    includes: ['Starter tools and meds', 'Basic base materials', 'Food and utility items', 'Low-cost combat backup']
+    includes: [
+      'Hazzy',
+      'Hand Made SMG',
+      '200 Pistol Ammo',
+      '5 Croc Meat',
+      '50 Blueberries',
+      '5 Medical Syringes',
+      '5 Bandages',
+      'Large Billboards Max 3x3',
+      '8 Homes',
+      '10 Second teleport',
+      '6 Backpack Rows',
+      'Workbench Covers Your Entire Base',
+      'Instant Mixing Table',
+      'Quick Sort For Boxes',
+      'Spawn a MiniCopter',
+      'Call a Helicopter',
+      'Sign Artist',
+      'Craft a Lock-On Rocket'
+    ]
   }
 };
 
