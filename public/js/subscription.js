@@ -14,6 +14,7 @@ const kits = {
     title: 'Quarry Kit',
     description: 'Utility-focused kit that grants passive resource production value for your wipe progression.',
     price: '8.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=ozrust-quarry',
     image: 'https://images.unsplash.com/photo-1517976487492-576ea6b2936d?auto=format&fit=crop&w=1200&q=80',
     includes: ['A Mining Quarry and Pumpjack on OzRust']
   },
@@ -22,6 +23,7 @@ const kits = {
     title: 'Crocodile Kit',
     description: 'Premium mid-tier combat kit tuned for fast progression and strong roam/defense utility.',
     price: '20.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=ozrust-crocodile',
     image: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1200&q=80',
     includes: [
       'Full Metal Armor',
@@ -51,6 +53,7 @@ const kits = {
     title: 'Shark Kit',
     description: 'Combat-forward kit built around reliable mid-tier gunplay and strong utility perks.',
     price: '15.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=ozrust-shark',
     image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1200&q=80',
     includes: [
       'Road Sign Armor',
@@ -78,6 +81,7 @@ const kits = {
     title: 'Wallaby Kit',
     description: 'Affordable balanced kit with strong utility perks and dependable close-range combat gear.',
     price: '10.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=ozrust-wallaby',
     image: 'https://images.unsplash.com/photo-1508179522353-11ba468c4a1c?auto=format&fit=crop&w=1200&q=80',
     includes: [
       'Hide Armor',
@@ -106,6 +110,7 @@ const kits = {
     title: 'Chad Kit',
     description: 'Strong all-round combat kit with upgraded armor, weapons, and premium mobility perks.',
     price: '30.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=rustygoose-chad',
     image: 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=1200&q=80',
     includes: [
       '1x SAR + 100x 5.56 ammo',
@@ -132,6 +137,7 @@ const kits = {
     title: 'Roam Kit',
     description: 'Get out of base and roam with a dependable mid-tier loadout and practical travel perks.',
     price: '15.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=rustygoose-roam',
     image: 'https://images.unsplash.com/photo-1601758260892-ae5f83368a3f?auto=format&fit=crop&w=1200&q=80',
     includes: [
       '1x Tompson + 30x Pistol Ammo',
@@ -152,6 +158,7 @@ const kits = {
     title: 'The Grub',
     description: 'Sneaky budget kit for quick snowballs, early fights, and efficient recovery runs.',
     price: '5.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=rustygoose-grub',
     image: 'https://images.unsplash.com/photo-1563298723-dcfebaa392e3?auto=format&fit=crop&w=1200&q=80',
     includes: [
       '1x Revolver & 30x Pistol Bullets',
@@ -176,6 +183,7 @@ const kits = {
     title: 'Bilby Kit',
     description: 'Entry-level budget kit focused on quick recovery, close-range fights, and core utility perks.',
     price: '5.00 USD',
+    checkoutUrl: 'https://shop.ozrust.com/?kit=ozrust-bilby',
     image: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80',
     includes: [
       'Hazzy',
@@ -224,25 +232,13 @@ function renderKit(kit) {
   shell.hidden = false;
 }
 
-addToCartBtn.addEventListener('click', async () => {
-  addToCartBtn.disabled = true;
-  addToCartBtn.textContent = 'Checking sign in...';
-
-  try {
-    const response = await fetch('/api/auth/session', { credentials: 'same-origin' });
-    const payload = await response.json().catch(() => ({}));
-
-    if (!response.ok || !payload.signedIn) {
-      const next = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `/signin?next=${next}`;
-      return;
-    }
-
-    addToCartBtn.textContent = 'Added to cart';
-  } catch (_error) {
-    addToCartBtn.textContent = 'Sign in required';
-    addToCartBtn.disabled = false;
+addToCartBtn.addEventListener('click', () => {
+  if (!kit || !kit.checkoutUrl) {
+    addToCartBtn.textContent = 'Checkout unavailable';
+    return;
   }
+
+  window.location.href = kit.checkoutUrl;
 });
 
 const kit = kits[getKitId()];
