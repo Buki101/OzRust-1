@@ -98,3 +98,24 @@
     min-height: 240px;
   }
 }
+
+
+.checkout-signin-prompt {
+  margin: 0 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(10, 16, 26, 0.72);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.checkout-signin-prompt p {
+  margin: 0 0 10px;
+  color: #d7e2f5;
+  font-size: 13px;
+}
+
+.checkout-signin-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

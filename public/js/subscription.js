@@ -7,6 +7,9 @@ const kitDescription = document.getElementById('kitDescription');
 const kitPrice = document.getElementById('kitPrice');
 const kitIncludes = document.getElementById('kitIncludes');
 const addToCartBtn = document.getElementById('addToCartBtn');
+const checkoutSigninPrompt = document.getElementById('checkoutSigninPrompt');
+const checkoutSigninLink = document.getElementById('checkoutSigninLink');
+const checkoutPromptClose = document.getElementById('checkoutPromptClose');
 
 const CHECKOUT_LINKS = {
   // Paste PayNow.gg URLs below (leave blank until owner provides links)
@@ -217,6 +220,21 @@ function getKitId() {
   return parts[parts.length - 1];
 }
 
+
+
+function showCheckoutSigninPrompt() {
+  if (!checkoutSigninPrompt || !checkoutSigninLink) return;
+  const next = encodeURIComponent(window.location.pathname + window.location.search);
+  checkoutSigninLink.href = `/signin?next=${next}`;
+  checkoutSigninPrompt.hidden = false;
+}
+
+if (checkoutPromptClose && checkoutSigninPrompt) {
+  checkoutPromptClose.addEventListener('click', () => {
+    checkoutSigninPrompt.hidden = true;
+  });
+}
+
 function renderKit(kit) {
   kitImage.src = kit.image;
   kitImage.alt = kit.title;
@@ -236,8 +254,23 @@ function renderKit(kit) {
   shell.hidden = false;
 }
 
-addToCartBtn.addEventListener('click', () => {
+addToCartBtn.addEventListener('click', async () => {
   if (!kit) return;
+
+  checkoutSigninPrompt && (checkoutSigninPrompt.hidden = true);
+
+  try {
+    const response = await fetch('/api/auth/session', { credentials: 'same-origin' });
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || !payload.signedIn) {
+      showCheckoutSigninPrompt();
+      return;
+    }
+  } catch (_error) {
+    showCheckoutSigninPrompt();
+    return;
+  }
 
   const checkoutUrl = CHECKOUT_LINKS[getKitId()] || '';
   if (!checkoutUrl) {
