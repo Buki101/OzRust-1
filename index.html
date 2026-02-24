@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nether Punch Hero</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --panel-bg: rgba(6, 10, 18, 0.58);
+      --panel-border: rgba(116, 146, 178, 0.35);
+      --text-muted: #9aaec4;
+      --text-main: #dce5f0;
+      --accent: #ff8c3a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 20% 10%, #111826 0%, #080c14 45%, #04060b 100%);
+      color: var(--text-main);
+    }
+
+    canvas#scene { display: block; width: 100%; height: 100%; }
+
+    .grit {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      opacity: 0.14;
+      mix-blend-mode: soft-light;
+      background-image:
+        radial-gradient(circle at 30% 20%, rgba(255, 142, 60, 0.2) 0 8%, transparent 38%),
+        radial-gradient(circle at 75% 72%, rgba(105, 152, 224, 0.17) 0 10%, transparent 40%),
+        repeating-radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04) 1px, transparent 2px, transparent 5px);
+    }
+
+    .ui {
+      position: fixed;
+      z-index: 5;
+      left: 24px;
+      bottom: 24px;
+      width: min(360px, calc(100vw - 48px));
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--panel-border);
+      background: linear-gradient(165deg, rgba(9, 16, 27, 0.72), var(--panel-bg));
+      backdrop-filter: blur(8px);
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .ui h1 {
+      margin: 0;
+      font-size: clamp(1.3rem, 2.6vw, 2rem);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #edf2f9;
+    }
+
+    .ui p {
+      margin: 8px 0 0;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 35%, rgba(12, 20, 34, 0.96), rgba(2, 4, 8, 0.98));
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-box {
+      width: min(88vw, 350px);
+      border: 1px solid rgba(95, 118, 150, 0.42);
+      border-radius: 14px;
+      padding: 18px;
+      background: rgba(4, 8, 16, 0.65);
+      backdrop-filter: blur(6px);
+    }
+
+    .loader-label {
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #b9cce2;
+    }
+
+    .loader-track {
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(71, 93, 124, 0.4);
+      overflow: hidden;
+    }
+
+    .loader-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      transition: width 0.2s ease;
+      background: linear-gradient(90deg, #4f74a5 0%, #ff8c3a 75%, #ffc58b 100%);
+      box-shadow: 0 0 18px rgba(255, 140, 58, 0.44);
+    }
+
+    .fallback {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      background: #05070c;
+      color: #f0f3f8;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .fallback.show { display: grid; }
+  </style>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <div class="grit"></div>
+
+  <section class="ui" aria-label="Hero panel">
+    <h1>Nether Punch</h1>
+    <p>Forged in heat and steel. Move your cursor to parallax the scene.</p>
+  </section>
+
+  <div class="loader" id="loader" role="status" aria-live="polite">
+    <div class="loader-box">
+      <div class="loader-label">Booting forge</div>
+      <div class="loader-track"><div class="loader-fill" id="loaderFill"></div></div>
+    </div>
+  </div>
+
+  <div class="fallback" id="fallback">
+    <div>
+      <h2>WebGL Unavailable</h2>
+      <p>This hero intro needs WebGL. Try a newer browser or enable hardware acceleration.</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.161.0/build/three.module.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js';
+    import { FontLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/FontLoader.js';
+    import { TextGeometry } from 'https://unpkg.com/three@0.161.0/examples/jsm/geometries/TextGeometry.js';
+    import { EffectComposer } from 'https://unpkg.com/three@0.161.0/examples/jsm/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'https://unpkg.com/three@0.161.0/examples/jsm/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'https://unpkg.com/three@0.161.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+    import { FilmPass } from 'https://unpkg.com/three@0.161.0/examples/jsm/postprocessing/FilmPass.js';
+
+    const canvas = document.getElementById('scene');
+    const loaderEl = document.getElementById('loader');
+    const loaderFill = document.getElementById('loaderFill');
+    const fallbackEl = document.getElementById('fallback');
+
+    const hasWebGL = (() => {
+      try {
+        const testCanvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (testCanvas.getContext('webgl2') || testCanvas.getContext('webgl')));
+      } catch {
+        return false;
+      }
+    })();
+
+    if (!hasWebGL) {
+      fallbackEl.classList.add('show');
+      loaderEl.classList.add('hidden');
+      throw new Error('WebGL unavailable');
+    }
+
+    const loadingManager = new THREE.LoadingManager();
+    let loadingDone = false;
+    const hideLoader = () => {
+      if (loadingDone) return;
+      loadingDone = true;
+      loaderFill.style.width = '100%';
+      window.setTimeout(() => loaderEl.classList.add('hidden'), 120);
+    };
+
+    loadingManager.onProgress = (_, loaded, total) => {
+      const pct = total > 0 ? Math.min(100, Math.round((loaded / total) * 100)) : 90;
+      loaderFill.style.width = `${pct}%`;
+    };
+    loadingManager.onLoad = hideLoader;
+    loadingManager.onError = () => {
+      loaderFill.style.width = '92%';
+    };
+
+    const LOADER_TIMEOUT_MS = 4000;
+    const loaderTimeout = window.setTimeout(hideLoader, LOADER_TIMEOUT_MS);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050910);
+    scene.fog = new THREE.Fog(0x050910, 10, 36);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.8, 8.8);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+
+    const composer = new EffectComposer(renderer);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    composer.addPass(new RenderPass(scene, camera));
+
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.95, 0.35, 0.82);
+    composer.addPass(bloomPass);
+
+    const filmPass = new FilmPass(0.09, 0.015, 648, false);
+    composer.addPass(filmPass);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enableZoom = false;
+    controls.enablePan = false;
+    controls.rotateSpeed = 0.25;
+    controls.maxPolarAngle = Math.PI * 0.58;
+    controls.minPolarAngle = Math.PI * 0.42;
+
+    const pointer = new THREE.Vector2(0, 0);
+    window.addEventListener('pointermove', (event) => {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
+    });
+
+    const textGroup = new THREE.Group();
+    scene.add(textGroup);
+
+    const hemi = new THREE.HemisphereLight(0x4f7fbe, 0x0a0d14, 0.32);
+    scene.add(hemi);
+
+    const keyLight = new THREE.DirectionalLight(0xff9340, 1.85);
+    keyLight.position.set(2.8, 3.3, 4.2);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x69b5ff, 1.25);
+    rimLight.position.set(-5.8, 2.4, -3.8);
+    scene.add(rimLight);
+
+    const backPulse = new THREE.PointLight(0xff7a22, 5.2, 15, 2);
+    backPulse.position.set(0, 1.1, -3.5);
+    scene.add(backPulse);
+
+    const steelMat = new THREE.MeshStandardMaterial({
+      color: 0x7f8ea1,
+      metalness: 0.9,
+      roughness: 0.25,
+      emissive: 0x152130,
+      emissiveIntensity: 0.16
+    });
+
+    const heatMat = new THREE.MeshStandardMaterial({
+      color: 0x31160a,
+      metalness: 0.32,
+      roughness: 0.45,
+      emissive: 0xff7423,
+      emissiveIntensity: 1.1
+    });
+
+    const ribGeo = new THREE.CylinderGeometry(0.085, 0.085, 12, 12, 1, true);
+    for (let i = 0; i < 8; i += 1) {
+      const rib = new THREE.Mesh(ribGeo, steelMat);
+      const spread = i - 3.5;
+      rib.position.set(spread * 0.9, 0.2 + Math.sin(i * 0.7) * 0.2, -1.2 - Math.abs(spread) * 0.45);
+      rib.rotation.z = Math.PI * 0.5;
+      rib.rotation.y = 0.3 + i * 0.17;
+      rib.scale.y = 0.85 + Math.random() * 0.22;
+      scene.add(rib);
+    }
+
+    const bgSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(34, 32, 16),
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: {
+          topColor: { value: new THREE.Color(0x17263e) },
+          bottomColor: { value: new THREE.Color(0x04060b) },
+          warmGlow: { value: new THREE.Color(0x2f1609) }
+        },
+        vertexShader: `
+          varying vec3 vWorld;
+          void main() {
+            vec4 worldPos = modelMatrix * vec4(position, 1.0);
+            vWorld = worldPos.xyz;
+            gl_Position = projectionMatrix * viewMatrix * worldPos;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vWorld;
+          uniform vec3 topColor;
+          uniform vec3 bottomColor;
+          uniform vec3 warmGlow;
+          void main() {
+            float h = normalize(vWorld).y * 0.5 + 0.5;
+            vec3 col = mix(bottomColor, topColor, smoothstep(0.0, 1.0, h));
+            float warm = smoothstep(0.0, 0.55, 1.0 - abs(vWorld.x) * 0.05) * smoothstep(-1.0, 1.8, vWorld.y);
+            col += warmGlow * warm * 0.22;
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `
+      })
+    );
+    scene.add(bgSphere);
+
+    const sparks = new THREE.BufferGeometry();
+    const sparkCount = 900;
+    const sparkPos = new Float32Array(sparkCount * 3);
+    const sparkColor = new Float32Array(sparkCount * 3);
+
+    for (let i = 0; i < sparkCount; i += 1) {
+      const i3 = i * 3;
+      sparkPos[i3 + 0] = (Math.random() - 0.5) * 24;
+      sparkPos[i3 + 1] = (Math.random() - 0.45) * 12;
+      sparkPos[i3 + 2] = (Math.random() - 0.5) * 20;
+
+      const hot = Math.random();
+      const col = new THREE.Color().setRGB(0.35 + hot * 0.65, 0.45 + hot * 0.25, 0.9 - hot * 0.55);
+      sparkColor[i3 + 0] = col.r;
+      sparkColor[i3 + 1] = col.g;
+      sparkColor[i3 + 2] = col.b;
+    }
+
+    sparks.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+    sparks.setAttribute('color', new THREE.BufferAttribute(sparkColor, 3));
+
+    const sparkMat = new THREE.PointsMaterial({
+      size: 0.05,
+      sizeAttenuation: true,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.82,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const sparkCloud = new THREE.Points(sparks, sparkMat);
+    scene.add(sparkCloud);
+
+    const fontLoader = new FontLoader(loadingManager);
+    const fontUrl = 'https://unpkg.com/three@0.161.0/examples/fonts/helvetiker_bold.typeface.json';
+
+    const fallbackText = () => {
+      const geo = new THREE.BoxGeometry(4.3, 1.05, 0.42);
+      const mesh = new THREE.Mesh(geo, heatMat);
+      mesh.position.y = 1.1;
+      textGroup.add(mesh);
+      hideLoader();
+    };
+
+    fontLoader.load(
+      fontUrl,
+      (font) => {
+        const textGeo = new TextGeometry('Nether Punch', {
+          font,
+          size: 1.0,
+          depth: 0.34,
+          curveSegments: 10,
+          bevelEnabled: true,
+          bevelThickness: 0.06,
+          bevelSize: 0.025,
+          bevelSegments: 6
+        });
+        textGeo.computeBoundingBox();
+        const center = new THREE.Vector3();
+        textGeo.boundingBox.getCenter(center);
+        textGeo.translate(-center.x, 1.15, -center.z);
+
+        const textCore = new THREE.Mesh(textGeo, steelMat);
+        textCore.castShadow = false;
+        textCore.receiveShadow = false;
+
+        const glowShell = new THREE.Mesh(textGeo.clone(), heatMat);
+        glowShell.scale.setScalar(1.015);
+        glowShell.position.z -= 0.03;
+
+        textGroup.add(glowShell, textCore);
+      },
+      undefined,
+      () => fallbackText()
+    );
+
+    function resize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+      bloomPass.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener('resize', resize);
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      controls.update();
+
+      textGroup.rotation.y = Math.sin(t * 0.35) * 0.1 + pointer.x * 0.26;
+      textGroup.rotation.x = Math.sin(t * 0.45) * 0.04 + pointer.y * 0.14;
+      textGroup.position.x = pointer.x * 0.22;
+      textGroup.position.y = 0.08 + pointer.y * 0.12;
+
+      sparkCloud.rotation.y = -t * 0.03;
+      sparkCloud.position.y = Math.sin(t * 0.5) * 0.16;
+
+      backPulse.intensity = 4.8 + Math.sin(t * 2.4) * 0.55;
+      keyLight.intensity = 1.72 + Math.sin(t * 1.25) * 0.1;
+
+      composer.render();
+    }
+
+    animate();
+
+    window.addEventListener('load', () => {
+      window.setTimeout(() => {
+        clearTimeout(loaderTimeout);
+        hideLoader();
+      }, 100);
+    });
+  </script>
+</body>
+</html>
