@@ -165,7 +165,14 @@
         patterns: [
           /compounded\s+testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
           /testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
-          /cypionate\s*250\s*mg\s*\/\s*ml\s*5\s*mls?/i
+          /cypionate\s*250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
+          /testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml/i,
+          /\bco\b\s*-?\s*testosterone\s+cypionate/i
+        ],
+        tokenSets: [
+          ['testosterone', 'cypionate', '250mg/ml'],
+          ['testosterone', 'cypionate', 'vial'],
+          ['co', 'testosterone', 'cypionate']
         ]
       }
     ];
@@ -288,7 +295,7 @@
         let matchingRows = 0;
 
         rows.forEach((row) => {
-          const hit = med.patterns.some((p) => p.test(row.description || row.rowText));
+          const hit = medicationMatches(med, row.description || row.rowText);
           if (!hit) return;
           matchingRows += 1;
           units += row.qty || 1;
@@ -303,6 +310,27 @@
           matchingRows
         };
       });
+    }
+
+
+    function medicationMatches(medication, text) {
+      const raw = String(text || '');
+      const normalized = normalizeForMatching(raw);
+      const regexHit = medication.patterns.some((p) => p.test(raw) || p.test(normalized));
+      if (regexHit) return true;
+
+      if (!medication.tokenSets || !medication.tokenSets.length) return false;
+      return medication.tokenSets.some((tokenSet) => tokenSet.every((token) => normalized.includes(token)));
+    }
+
+    function normalizeForMatching(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/\([^)]*\)/g, ' ')
+        .replace(/[^a-z0-9./]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/mg\s*\/\s*ml/g, 'mg/ml')
+        .trim();
     }
 
     function findTotalCandidates(allRows, summaryRows) {
