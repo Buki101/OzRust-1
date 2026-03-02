@@ -100,6 +100,7 @@
             <th>Medication</th>
             <th>Order Count</th>
             <th>Total Units</th>
+            <th>Medication Value</th>
             <th>Matching Rows</th>
           </tr>
         </thead>
@@ -215,17 +216,33 @@
         const rawRows = await readSpreadsheetRows(selectedFile);
         const normalizedRows = normalizeRows(rawRows);
         const summaryRows = getSummaryRows(normalizedRows);
-        const itemRows = summaryRows.filter((r) => !r.isShipping && r.description);
-        const medResults = calculateMedicationTotals(itemRows);
         const totalCandidates = findTotalCandidates(normalizedRows, summaryRows);
         const bestTotal = chooseBestTotal(totalCandidates);
 
+        const reconciliation = reconcileMedicationTotals(normalizedRows, summaryRows, bestTotal);
+        const medResults = reconciliation.medResults;
+
         renderMedicationRows(medResults);
         renderTotalRows(totalCandidates);
-        renderMetrics(medResults, bestTotal, summaryRows);
+        renderMetrics(medResults, bestTotal, summaryRows, reconciliation);
 
-        debugText.textContent = normalizedRows.slice(0, 200).map((r) => JSON.stringify(r)).join('\n');
-        setStatus(`Done. Parsed ${normalizedRows.length} rows, ${summaryRows.length} summary rows.`, 'success');
+        debugText.textContent = [
+          `Re-scrape strategy: ${reconciliation.strategy}`,
+          `Attempted passes: ${reconciliation.attempts}`,
+          `Medication value total: $${reconciliation.medicationValueTotal.toFixed(2)}`,
+          `Invoice total: ${bestTotal ? `$${bestTotal.value.toFixed(2)}` : 'Not found'}`,
+          `Difference: $${reconciliation.difference.toFixed(2)}`,
+          '',
+          ...normalizedRows.slice(0, 200).map((r) => JSON.stringify(r))
+        ].join('\n');
+
+        if (!bestTotal) {
+          setStatus(`Done. Parsed ${normalizedRows.length} rows but invoice total was not found.`, 'error');
+        } else if (Math.abs(reconciliation.difference) <= 0.01) {
+          setStatus(`Done. Parsed ${normalizedRows.length} rows. Medication totals reconcile to invoice total after ${reconciliation.attempts} pass(es).`, 'success');
+        } else {
+          setStatus(`Done with warnings. Re-scraped ${reconciliation.attempts} pass(es) but still off by $${reconciliation.difference.toFixed(2)}.`, 'error');
+        }
       } catch (error) {
         console.error(error);
         setStatus(`Failed to parse spreadsheet: ${error.message || error}`, 'error');
@@ -270,6 +287,7 @@
           const qty = extractQty(cells, joined);
           const description = inferDescription(cells, joined);
           const orderId = extractOrderId(joined);
+          const lineAmount = extractLineAmount(joined, moneyValues);
           return {
             ...row,
             cells,
@@ -278,6 +296,7 @@
             qty,
             description,
             orderId,
+            lineAmount,
             isShipping: /shipping|freight|delivery|postage/i.test(joined)
           };
         })
@@ -306,12 +325,14 @@
         const orderIds = new Set();
         let units = 0;
         let matchingRows = 0;
+        let totalValue = 0;
 
         rows.forEach((row) => {
           const hit = medicationMatches(med, row.description || row.rowText);
           if (!hit) return;
           matchingRows += 1;
           units += row.qty || 1;
+          totalValue += row.lineAmount || 0;
           if (row.orderId) orderIds.add(row.orderId);
           else orderIds.add(`ROW-${row.sheetName}-${row.rowIndex}`);
         });
@@ -320,11 +341,55 @@
           ...med,
           orderCount: orderIds.size,
           units,
+          totalValue,
           matchingRows
         };
       });
     }
 
+    function reconcileMedicationTotals(allRows, summaryRows, bestTotal) {
+      const strategies = [
+        {
+          name: 'Summary section rows',
+          rows: summaryRows.filter((r) => !r.isShipping && r.description && (r.lineAmount > 0 || r.qty > 0))
+        },
+        {
+          name: 'All non-shipping rows',
+          rows: allRows.filter((r) => !r.isShipping && r.description && (r.lineAmount > 0 || r.qty > 0))
+        },
+        {
+          name: 'All non-shipping rows (medication-keyword filtered)',
+          rows: allRows.filter((r) => !r.isShipping && /(testosterone|hcg|anastrozole|anastrazole|cypionate|enanthate|enantate|primoteston)/i.test(r.rowText))
+        }
+      ];
+
+      let best = null;
+      const invoiceTotal = bestTotal ? bestTotal.value : null;
+
+      for (let i = 0; i < strategies.length; i += 1) {
+        const strategy = strategies[i];
+        const medResults = calculateMedicationTotals(strategy.rows);
+        const medicationValueTotal = medResults.reduce((sum, m) => sum + m.totalValue, 0);
+        const difference = invoiceTotal === null ? 0 : Number((invoiceTotal - medicationValueTotal).toFixed(2));
+        const outcome = {
+          strategy: strategy.name,
+          attempts: i + 1,
+          medResults,
+          medicationValueTotal,
+          difference: Math.abs(difference)
+        };
+
+        if (!best || outcome.difference < best.difference) {
+          best = outcome;
+        }
+
+        if (invoiceTotal !== null && outcome.difference <= 0.01) {
+          return outcome;
+        }
+      }
+
+      return best || { strategy: 'No strategy', attempts: 0, medResults: calculateMedicationTotals([]), medicationValueTotal: 0, difference: 0 };
+    }
 
     function medicationMatches(medication, text) {
       const raw = String(text || '');
@@ -402,9 +467,15 @@
     }
 
     function extractMoneyValues(text) {
-      return [...text.matchAll(/\$?\s*([\d]{1,3}(?:,[\d]{3})*(?:\.\d{2})|[\d]+(?:\.\d{2}))/g)]
+      return [...text.matchAll(/\$\s*([\d]{1,3}(?:,[\d]{3})*(?:\.\d{2})|[\d]+(?:\.\d{2}))/g)]
         .map((m) => Number.parseFloat(m[1].replace(/,/g, '')))
         .filter((n) => Number.isFinite(n) && n >= 0);
+    }
+
+    function extractLineAmount(text, moneyValues) {
+      if (!moneyValues.length) return 0;
+      if (/shipping|freight|delivery|postage/i.test(text)) return 0;
+      return moneyValues[moneyValues.length - 1] || 0;
     }
 
     function extractQty(cells, joined) {
@@ -444,6 +515,7 @@
           <td>${escapeHtml(row.label)}</td>
           <td><strong>${row.orderCount}</strong></td>
           <td><strong>${formatNumber(row.units)}</strong></td>
+          <td><strong>$${row.totalValue.toFixed(2)}</strong></td>
           <td>${row.matchingRows}</td>
         </tr>
       `).join('');
@@ -466,9 +538,11 @@
         `).join('');
     }
 
-    function renderMetrics(medRows, bestTotal, summaryRows) {
+    function renderMetrics(medRows, bestTotal, summaryRows, reconciliation) {
       const totalOrders = medRows.reduce((sum, row) => sum + row.orderCount, 0);
       const totalUnits = medRows.reduce((sum, row) => sum + row.units, 0);
+      const medicationValueTotal = medRows.reduce((sum, row) => sum + row.totalValue, 0);
+      const comparisonDiff = bestTotal ? Math.abs(bestTotal.value - medicationValueTotal) : 0;
       const summaryOrdersExShipping = summaryRows
         .filter((r) => !r.isShipping && r.qty > 0 && r.description)
         .reduce((sum, row) => sum + row.qty, 0);
@@ -480,6 +554,9 @@
       const metrics = [
         { label: 'Invoice Total (Best Match)', value: bestTotal ? `$${bestTotal.value.toFixed(2)}` : 'Not found' },
         { label: 'Summary Item Orders (Excl Shipping)', value: formatNumber(summaryOrdersExShipping) },
+        { label: 'Medication Value Total', value: `$${medicationValueTotal.toFixed(2)}` },
+        { label: 'Invoice vs Medication Diff', value: bestTotal ? `$${comparisonDiff.toFixed(2)}` : 'N/A' },
+        { label: 'Re-scrape Strategy Used', value: reconciliation ? reconciliation.strategy : 'N/A' },
         { label: 'Total Orders (All Medications)', value: String(totalOrders) },
         { label: 'Total Units (All Medications)', value: formatNumber(totalUnits) },
         { label: 'Testosterone Orders (Combined)', value: String(testosteroneCombined) },
