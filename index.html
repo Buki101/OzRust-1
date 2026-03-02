@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRT Australia Spreadsheet Invoice Scraper</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #06b6d4;
+      --good: #22c55e;
+      --bad: #ef4444;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 20% 0%, #1e293b, var(--bg) 45%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { width: min(1150px, 95vw); margin: 2rem auto; display: grid; gap: 1rem; }
+    .card {
+      background: linear-gradient(145deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+    h1, h2 { margin: 0 0 0.5rem; }
+    p { margin: 0.25rem 0; color: var(--muted); }
+    .header { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: flex-start; }
+    .brand { font-weight: 700; font-size: 1.2rem; letter-spacing: 0.4px; color: var(--accent); }
+    .upload { border: 1px dashed #64748b; border-radius: 12px; padding: 0.75rem; background: rgba(15, 23, 42, 0.65); }
+    input[type="file"] { color: var(--text); }
+    button {
+      margin-top: 0.75rem;
+      background: linear-gradient(90deg, #0891b2, #0ea5e9);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .status { margin-top: 0.6rem; color: #cbd5e1; }
+    .status.error { color: var(--bad); }
+    .status.success { color: var(--good); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+    .metric { border: 1px solid var(--border); border-radius: 12px; background: rgba(2, 6, 23, 0.6); padding: 0.75rem; }
+    .metric .label { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.2rem; }
+    .metric .value { font-size: 1.25rem; font-weight: 700; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td { text-align: left; padding: 0.6rem; border-bottom: 1px solid #1e293b; vertical-align: top; font-size: 0.93rem; }
+    th { background: #0b1220; color: #cbd5e1; }
+    tr:nth-child(even) td { background: rgba(2, 6, 23, 0.3); }
+    details { margin-top: 0.75rem; border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0.75rem; background: rgba(2, 6, 23, 0.45); }
+    pre { margin: 0.6rem 0 0; white-space: pre-wrap; font-size: 0.8rem; color: #cbd5e1; max-height: 260px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <div class="header">
+        <div>
+          <div class="brand">TRT Australia</div>
+          <h1>Spreadsheet Invoice Scraper</h1>
+          <p>Local-only tool: upload CSV/XLS/XLSX invoice export to calculate medication counts and totals.</p>
+        </div>
+        <div class="upload">
+          <input id="sheetInput" type="file" accept=".csv,.xls,.xlsx,.xlsm,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" />
+        </div>
+      </div>
+      <button id="analyzeBtn" disabled>Analyze Spreadsheet</button>
+      <div id="status" class="status">Select a spreadsheet to begin.</div>
+    </section>
+
+    <section class="card">
+      <h2>Key Totals</h2>
+      <div class="grid" id="totalsGrid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Medication Breakdown</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Medication</th>
+            <th>Order Count</th>
+            <th>Total Units</th>
+            <th>Medication Value</th>
+            <th>Matching Rows</th>
+          </tr>
+        </thead>
+        <tbody id="medTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Total Candidates</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Value</th>
+            <th>Row</th>
+          </tr>
+        </thead>
+        <tbody id="totalTable"></tbody>
+      </table>
+
+      <details>
+        <summary>Debug: normalized rows preview</summary>
+        <pre id="debugText"></pre>
+      </details>
+    </section>
+  </main>
+
+  <script type="module">
+    import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
+
+    const MEDICATIONS = [
+      {
+        key: 'test-e-12',
+        label: 'TESTOSTERONE ENANTHATE 250mg/ml 12mls',
+        patterns: [
+          /testosterone\s+enan(?:thate|tate)\s+250\s*mg\s*\/\s*ml\s*12\s*mls?/i,
+          /testosterone\s+enan(?:thate|tate)\s*12\s*mls?/i,
+          /enan(?:thate|tate)\s*250\s*mg\s*\/\s*ml\s*12\s*mls?/i,
+          /testosterone\s+enan(?:thate|tate)\s*250\s*mg\s*\/\s*1\s*ml/i,
+          /primoteston\s+depot/i,
+          /testosterone\s+enan(?:thate|tate)/i
+        ],
+        tokenSets: [
+          ['testosterone', 'enanthate'],
+          ['testosterone', 'enantate'],
+          ['primoteston', 'depot']
+        ]
+      },
+      {
+        key: 'test-e-5',
+        label: 'TESTOSTERONE ENANTHATE 250mg/ml 5mls',
+        patterns: [
+          /testosterone\s+enan(?:thate|tate)\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
+          /testosterone\s+enan(?:thate|tate)\s*5\s*mls?/i,
+          /enan(?:thate|tate)\s*250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
+          /testosterone\s+enan(?:thate|tate).*\b5\s*ml\b/i
+        ],
+        tokenSets: [
+          ['testosterone', 'enanthate', '5ml'],
+          ['testosterone', 'enantate', '5ml']
+        ]
+      },
+      {
+        key: 'hcg',
+        label: 'HCG',
+        patterns: [/\bhcg\b/i, /human\s+chorionic\s+gonadotroph/i, /gonadotropin/i]
+      },
+      {
+        key: 'anastrazole',
+        label: 'ANASTRAZOLE',
+        patterns: [/\banastrazole\b/i, /\banastrozole\b/i]
+      },
+      {
+        key: 'test-c-5',
+        label: 'Compounded Testosterone Cypionate 250mg/ml 5mls',
+        patterns: [
+          /compounded\s+testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
+          /testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
+          /cypionate\s*250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
+          /testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml/i,
+          /\bco\b\s*-?\s*testosterone\s+cypionate/i
+        ],
+        tokenSets: [
+          ['testosterone', 'cypionate', '250mg/ml'],
+          ['testosterone', 'cypionate', 'vial'],
+          ['co', 'testosterone', 'cypionate']
+        ]
+      }
+    ];
+
+    const sheetInput = document.getElementById('sheetInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const statusEl = document.getElementById('status');
+    const medTable = document.getElementById('medTable');
+    const totalTable = document.getElementById('totalTable');
+    const totalsGrid = document.getElementById('totalsGrid');
+    const debugText = document.getElementById('debugText');
+
+    let selectedFile = null;
+
+    sheetInput.addEventListener('change', () => {
+      selectedFile = sheetInput.files?.[0] ?? null;
+      analyzeBtn.disabled = !selectedFile;
+      setStatus(selectedFile ? `Ready: ${selectedFile.name}` : 'Select a spreadsheet to begin.');
+    });
+
+    analyzeBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      clearResults();
+      setStatus('Reading spreadsheet...');
+
+      try {
+        const rawRows = await readSpreadsheetRows(selectedFile);
+        const normalizedRows = normalizeRows(rawRows);
+        const summaryRows = getSummaryRows(normalizedRows);
+        const totalCandidates = findTotalCandidates(normalizedRows, summaryRows);
+        const bestTotal = chooseBestTotal(totalCandidates);
+
+        const reconciliation = reconcileMedicationTotals(normalizedRows, summaryRows, bestTotal);
+        const medResults = reconciliation.medResults;
+
+        renderMedicationRows(medResults);
+        renderTotalRows(totalCandidates);
+        renderMetrics(medResults, bestTotal, summaryRows, reconciliation);
+
+        debugText.textContent = [
+          `Re-scrape strategy: ${reconciliation.strategy}`,
+          `Attempted passes: ${reconciliation.attempts}`,
+          `Medication value total: $${reconciliation.medicationValueTotal.toFixed(2)}`,
+          `Invoice total: ${bestTotal ? `$${bestTotal.value.toFixed(2)}` : 'Not found'}`,
+          `Difference: $${reconciliation.difference.toFixed(2)}`,
+          '',
+          ...normalizedRows.slice(0, 200).map((r) => JSON.stringify(r))
+        ].join('\n');
+
+        if (!bestTotal) {
+          setStatus(`Done. Parsed ${normalizedRows.length} rows but invoice total was not found.`, 'error');
+        } else if (Math.abs(reconciliation.difference) <= 0.01) {
+          setStatus(`Done. Parsed ${normalizedRows.length} rows. Medication totals reconcile to invoice total after ${reconciliation.attempts} pass(es).`, 'success');
+        } else {
+          setStatus(`Done with warnings. Re-scraped ${reconciliation.attempts} pass(es) but still off by $${reconciliation.difference.toFixed(2)}.`, 'error');
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus(`Failed to parse spreadsheet: ${error.message || error}`, 'error');
+      }
+    });
+
+    function setStatus(text, type = '') {
+      statusEl.textContent = text;
+      statusEl.className = `status ${type}`.trim();
+    }
+
+    function clearResults() {
+      medTable.innerHTML = '';
+      totalTable.innerHTML = '';
+      totalsGrid.innerHTML = '';
+      debugText.textContent = '';
+    }
+
+    async function readSpreadsheetRows(file) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const workbook = XLSX.read(bytes, { type: 'array', cellDates: false, raw: false });
+      const rows = [];
+
+      workbook.SheetNames.forEach((sheetName) => {
+        const sheet = workbook.Sheets[sheetName];
+        const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+        matrix.forEach((cells, rowIndex) => {
+          const text = cells.map((c) => String(c ?? '').trim()).filter(Boolean).join(' | ');
+          rows.push({ sheetName, rowIndex: rowIndex + 1, cells, rowText: text });
+        });
+      });
+
+      return rows;
+    }
+
+    function normalizeRows(rows) {
+      return rows
+        .map((row) => {
+          const cells = row.cells.map((v) => normalizeText(String(v ?? '')));
+          const joined = normalizeText(cells.join(' | '));
+          const moneyValues = extractMoneyValues(joined);
+          const qty = extractQty(cells, joined);
+          const description = inferDescription(cells, joined);
+          const orderId = extractOrderId(joined);
+          const lineAmount = extractLineAmount(joined, moneyValues);
+          return {
+            ...row,
+            cells,
+            rowText: joined,
+            moneyValues,
+            qty,
+            description,
+            orderId,
+            lineAmount,
+            isShipping: /shipping|freight|delivery|postage/i.test(joined)
+          };
+        })
+        .filter((r) => r.rowText.length > 0);
+    }
+
+    function normalizeText(text) {
+      return text.replace(/[\u00A0\t]+/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function getSummaryRows(rows) {
+      const start = rows.findIndex((r) => /invoice\s*summary|summary/i.test(r.rowText));
+      if (start === -1) return rows.filter((r) => r.qty > 0 || /amount\s*due|total|balance\s*due/i.test(r.rowText));
+
+      const picked = [];
+      for (let i = start; i < rows.length; i += 1) {
+        const row = rows[i];
+        picked.push(row);
+        if (i > start && /terms|notes?|payment|thank\s*you|remit/i.test(row.rowText)) break;
+      }
+      return picked;
+    }
+
+    function calculateMedicationTotals(rows) {
+      return MEDICATIONS.map((med) => {
+        const orderIds = new Set();
+        let units = 0;
+        let matchingRows = 0;
+        let totalValue = 0;
+
+        rows.forEach((row) => {
+          const hit = medicationMatches(med, row.description || row.rowText);
+          if (!hit) return;
+          matchingRows += 1;
+          units += row.qty || 1;
+          totalValue += row.lineAmount || 0;
+          if (row.orderId) orderIds.add(row.orderId);
+          else orderIds.add(`ROW-${row.sheetName}-${row.rowIndex}`);
+        });
+
+        return {
+          ...med,
+          orderCount: orderIds.size,
+          units,
+          totalValue,
+          matchingRows
+        };
+      });
+    }
+
+    function reconcileMedicationTotals(allRows, summaryRows, bestTotal) {
+      const strategies = [
+        {
+          name: 'Summary section rows',
+          rows: summaryRows.filter((r) => !r.isShipping && r.description && (r.lineAmount > 0 || r.qty > 0))
+        },
+        {
+          name: 'All non-shipping rows',
+          rows: allRows.filter((r) => !r.isShipping && r.description && (r.lineAmount > 0 || r.qty > 0))
+        },
+        {
+          name: 'All non-shipping rows (medication-keyword filtered)',
+          rows: allRows.filter((r) => !r.isShipping && /(testosterone|hcg|anastrozole|anastrazole|cypionate|enanthate|enantate|primoteston)/i.test(r.rowText))
+        }
+      ];
+
+      let best = null;
+      const invoiceTotal = bestTotal ? bestTotal.value : null;
+
+      for (let i = 0; i < strategies.length; i += 1) {
+        const strategy = strategies[i];
+        const medResults = calculateMedicationTotals(strategy.rows);
+        const medicationValueTotal = medResults.reduce((sum, m) => sum + m.totalValue, 0);
+        const difference = invoiceTotal === null ? 0 : Number((invoiceTotal - medicationValueTotal).toFixed(2));
+        const outcome = {
+          strategy: strategy.name,
+          attempts: i + 1,
+          medResults,
+          medicationValueTotal,
+          difference: Math.abs(difference)
+        };
+
+        if (!best || outcome.difference < best.difference) {
+          best = outcome;
+        }
+
+        if (invoiceTotal !== null && outcome.difference <= 0.01) {
+          return outcome;
+        }
+      }
+
+      return best || { strategy: 'No strategy', attempts: 0, medResults: calculateMedicationTotals([]), medicationValueTotal: 0, difference: 0 };
+    }
+
+    function medicationMatches(medication, text) {
+      const raw = String(text || '');
+      const normalized = normalizeForMatching(raw);
+      const regexHit = medication.patterns.some((p) => p.test(raw) || p.test(normalized));
+      if (regexHit) return true;
+
+      if (!medication.tokenSets || !medication.tokenSets.length) return false;
+      return medication.tokenSets.some((tokenSet) => tokenSet.every((token) => normalized.includes(token)));
+    }
+
+    function normalizeForMatching(text) {
+      return String(text || '')
+        .toLowerCase()
+        .replace(/\([^)]*\)/g, ' ')
+        .replace(/[^a-z0-9./]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/mg\s*\/\s*ml/g, 'mg/ml')
+        .trim();
+    }
+
+    function findTotalCandidates(allRows, summaryRows) {
+      const rows = [...summaryRows, ...allRows];
+      const candidates = [];
+
+      rows.forEach((row) => {
+        if (!row.moneyValues.length) return;
+        if (/shipping|freight|delivery|postage/i.test(row.rowText)) return;
+
+        if (/(amount\s*due|balance\s*due|grand\s*total|invoice\s*total|summary\s*total|total\s*(inc|incl)\s*gst)/i.test(row.rowText)) {
+          candidates.push({
+            source: /summary/i.test(row.rowText) ? 'Summary section' : 'Total row',
+            value: row.moneyValues[row.moneyValues.length - 1],
+            row
+          });
+        }
+      });
+
+      if (!candidates.length) {
+        summaryRows.forEach((row) => {
+          if (row.moneyValues.length && !/shipping|freight|delivery|postage/i.test(row.rowText)) {
+            candidates.push({ source: 'Summary fallback', value: row.moneyValues[row.moneyValues.length - 1], row });
+          }
+        });
+      }
+
+      return dedupeCandidates(candidates);
+    }
+
+    function dedupeCandidates(candidates) {
+      const seen = new Set();
+      return candidates.filter((c) => {
+        const key = `${c.value}|${c.row.sheetName}|${c.row.rowIndex}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function chooseBestTotal(candidates) {
+      if (!candidates.length) return null;
+      return [...candidates].sort((a, b) => scoreCandidate(b) - scoreCandidate(a) || b.value - a.value)[0];
+    }
+
+    function scoreCandidate(candidate) {
+      const text = candidate.row.rowText;
+      let score = 0;
+      if (/amount\s*due|balance\s*due/i.test(text)) score += 100;
+      if (/grand\s*total/i.test(text)) score += 90;
+      if (/summary\s*total/i.test(text)) score += 80;
+      if (/invoice\s*total/i.test(text)) score += 70;
+      if (/summary/i.test(candidate.source)) score += 15;
+      score += candidate.row.rowIndex / 1000;
+      return score;
+    }
+
+    function extractMoneyValues(text) {
+      return [...text.matchAll(/\$\s*([\d]{1,3}(?:,[\d]{3})*(?:\.\d{2})|[\d]+(?:\.\d{2}))/g)]
+        .map((m) => Number.parseFloat(m[1].replace(/,/g, '')))
+        .filter((n) => Number.isFinite(n) && n >= 0);
+    }
+
+    function extractLineAmount(text, moneyValues) {
+      if (!moneyValues.length) return 0;
+      if (/shipping|freight|delivery|postage/i.test(text)) return 0;
+      return moneyValues[moneyValues.length - 1] || 0;
+    }
+
+    function extractQty(cells, joined) {
+      const qtyHeaderIndex = cells.findIndex((c) => /^qty|quantity$/i.test(c));
+      if (qtyHeaderIndex !== -1) return 0;
+
+      const qtyByPattern = joined.match(/(?:^|\|\s|\s)(\d+(?:\.\d+)?)\s*(?:\||$)/);
+      if (qtyByPattern) {
+        const q = Number.parseFloat(qtyByPattern[1]);
+        if (Number.isFinite(q) && q > 0 && q < 10000) return q;
+      }
+
+      const qtyBeforePrice = joined.match(/(\d+(?:\.\d+)?)\s+\$\s*[\d,]+(?:\.\d{2})?/);
+      if (qtyBeforePrice) {
+        const q = Number.parseFloat(qtyBeforePrice[1]);
+        if (Number.isFinite(q) && q > 0 && q < 10000) return q;
+      }
+
+      return 1;
+    }
+
+    function inferDescription(cells, joined) {
+      const cleaned = cells
+        .map((c) => c.replace(/\$\s*[\d,]+(?:\.\d{2})?/g, '').trim())
+        .filter((c) => c && !/^\d+(?:\.\d+)?$/.test(c));
+      return cleaned.join(' ').trim() || joined;
+    }
+
+    function extractOrderId(text) {
+      const m = text.match(/#\d{4,}/);
+      return m ? m[0] : '';
+    }
+
+    function renderMedicationRows(rows) {
+      medTable.innerHTML = rows.map((row) => `
+        <tr>
+          <td>${escapeHtml(row.label)}</td>
+          <td><strong>${row.orderCount}</strong></td>
+          <td><strong>${formatNumber(row.units)}</strong></td>
+          <td><strong>$${row.totalValue.toFixed(2)}</strong></td>
+          <td>${row.matchingRows}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderTotalRows(rows) {
+      if (!rows.length) {
+        totalTable.innerHTML = '<tr><td colspan="3">No totals detected.</td></tr>';
+        return;
+      }
+
+      totalTable.innerHTML = [...rows]
+        .sort((a, b) => scoreCandidate(b) - scoreCandidate(a))
+        .map((row) => `
+          <tr>
+            <td>${escapeHtml(row.source)}</td>
+            <td>$${row.value.toFixed(2)}</td>
+            <td>${escapeHtml(`${row.row.sheetName}#${row.row.rowIndex} - ${row.row.rowText}`)}</td>
+          </tr>
+        `).join('');
+    }
+
+    function renderMetrics(medRows, bestTotal, summaryRows, reconciliation) {
+      const totalOrders = medRows.reduce((sum, row) => sum + row.orderCount, 0);
+      const totalUnits = medRows.reduce((sum, row) => sum + row.units, 0);
+      const medicationValueTotal = medRows.reduce((sum, row) => sum + row.totalValue, 0);
+      const comparisonDiff = bestTotal ? Math.abs(bestTotal.value - medicationValueTotal) : 0;
+      const summaryOrdersExShipping = summaryRows
+        .filter((r) => !r.isShipping && r.qty > 0 && r.description)
+        .reduce((sum, row) => sum + row.qty, 0);
+      const testosteroneCombined = medRows.filter((m) => m.key.startsWith('test-')).reduce((sum, m) => sum + m.orderCount, 0);
+      const nonTestosterone = totalOrders - testosteroneCombined;
+      const en12 = medRows.find((m) => m.key === 'test-e-12')?.orderCount || 0;
+      const en5 = medRows.find((m) => m.key === 'test-e-5')?.orderCount || 0;
+
+      const metrics = [
+        { label: 'Invoice Total (Best Match)', value: bestTotal ? `$${bestTotal.value.toFixed(2)}` : 'Not found' },
+        { label: 'Summary Item Orders (Excl Shipping)', value: formatNumber(summaryOrdersExShipping) },
+        { label: 'Medication Value Total', value: `$${medicationValueTotal.toFixed(2)}` },
+        { label: 'Invoice vs Medication Diff', value: bestTotal ? `$${comparisonDiff.toFixed(2)}` : 'N/A' },
+        { label: 'Re-scrape Strategy Used', value: reconciliation ? reconciliation.strategy : 'N/A' },
+        { label: 'Total Orders (All Medications)', value: String(totalOrders) },
+        { label: 'Total Units (All Medications)', value: formatNumber(totalUnits) },
+        { label: 'Testosterone Orders (Combined)', value: String(testosteroneCombined) },
+        { label: 'Non-Testosterone Orders', value: String(nonTestosterone) },
+        { label: 'Enanthate 12ml Orders', value: String(en12) },
+        { label: 'Enanthate 5ml Orders', value: String(en5) }
+      ];
+
+      totalsGrid.innerHTML = metrics.map((m) => `
+        <article class="metric">
+          <div class="label">${escapeHtml(m.label)}</div>
+          <div class="value">${escapeHtml(m.value)}</div>
+        </article>
+      `).join('');
+    }
+
+    function formatNumber(n) {
+      return Number.isInteger(n) ? String(n) : n.toFixed(2);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+  </script>
+</body>
+</html>
