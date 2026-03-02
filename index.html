@@ -137,7 +137,15 @@
         patterns: [
           /testosterone\s+enan(?:thate|tate)\s+250\s*mg\s*\/\s*ml\s*12\s*mls?/i,
           /testosterone\s+enan(?:thate|tate)\s*12\s*mls?/i,
-          /enan(?:thate|tate)\s*250\s*mg\s*\/\s*ml\s*12\s*mls?/i
+          /enan(?:thate|tate)\s*250\s*mg\s*\/\s*ml\s*12\s*mls?/i,
+          /testosterone\s+enan(?:thate|tate)\s*250\s*mg\s*\/\s*1\s*ml/i,
+          /primoteston\s+depot/i,
+          /testosterone\s+enan(?:thate|tate)/i
+        ],
+        tokenSets: [
+          ['testosterone', 'enanthate'],
+          ['testosterone', 'enantate'],
+          ['primoteston', 'depot']
         ]
       },
       {
@@ -146,7 +154,12 @@
         patterns: [
           /testosterone\s+enan(?:thate|tate)\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
           /testosterone\s+enan(?:thate|tate)\s*5\s*mls?/i,
-          /enan(?:thate|tate)\s*250\s*mg\s*\/\s*ml\s*5\s*mls?/i
+          /enan(?:thate|tate)\s*250\s*mg\s*\/\s*ml\s*5\s*mls?/i,
+          /testosterone\s+enan(?:thate|tate).*\b5\s*ml\b/i
+        ],
+        tokenSets: [
+          ['testosterone', 'enanthate', '5ml'],
+          ['testosterone', 'enantate', '5ml']
         ]
       },
       {
