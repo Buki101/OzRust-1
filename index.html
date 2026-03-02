@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TRT Australia PDF Invoice Scraper</title>
+  <title>TRT Australia Spreadsheet Invoice Scraper</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -23,12 +23,7 @@
       color: var(--text);
       min-height: 100vh;
     }
-    .container {
-      width: min(1100px, 95vw);
-      margin: 2rem auto;
-      display: grid;
-      gap: 1rem;
-    }
+    .container { width: min(1150px, 95vw); margin: 2rem auto; display: grid; gap: 1rem; }
     .card {
       background: linear-gradient(145deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95));
       border: 1px solid var(--border);
@@ -38,35 +33,14 @@
     }
     h1, h2 { margin: 0 0 0.5rem; }
     p { margin: 0.25rem 0; color: var(--muted); }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .brand {
-      font-weight: 700;
-      font-size: 1.2rem;
-      letter-spacing: 0.5px;
-      color: var(--accent);
-    }
-    .upload {
-      border: 1px dashed #64748b;
-      border-radius: 12px;
-      padding: 0.75rem;
-      background: rgba(15, 23, 42, 0.65);
-    }
-    .controls {
-      margin-top: 0.75rem;
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
+    .header { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: flex-start; }
+    .brand { font-weight: 700; font-size: 1.2rem; letter-spacing: 0.4px; color: var(--accent); }
+    .upload { border: 1px dashed #64748b; border-radius: 12px; padding: 0.75rem; background: rgba(15, 23, 42, 0.65); }
     input[type="file"] { color: var(--text); }
     button {
+      margin-top: 0.75rem;
       background: linear-gradient(90deg, #0891b2, #0ea5e9);
-      color: white;
+      color: #fff;
       border: none;
       border-radius: 10px;
       padding: 0.65rem 1rem;
@@ -74,21 +48,11 @@
       cursor: pointer;
     }
     button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .status { margin-top: 0.5rem; font-size: 0.95rem; color: #cbd5e1; }
+    .status { margin-top: 0.6rem; color: #cbd5e1; }
     .status.error { color: var(--bad); }
     .status.success { color: var(--good); }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-    .metric {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(2, 6, 23, 0.6);
-      padding: 0.75rem;
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+    .metric { border: 1px solid var(--border); border-radius: 12px; background: rgba(2, 6, 23, 0.6); padding: 0.75rem; }
     .metric .label { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.2rem; }
     .metric .value { font-size: 1.25rem; font-weight: 700; }
     table {
@@ -99,30 +63,11 @@
       border-radius: 12px;
       overflow: hidden;
     }
-    th, td {
-      text-align: left;
-      padding: 0.6rem;
-      border-bottom: 1px solid #1e293b;
-      vertical-align: top;
-      font-size: 0.93rem;
-    }
+    th, td { text-align: left; padding: 0.6rem; border-bottom: 1px solid #1e293b; vertical-align: top; font-size: 0.93rem; }
     th { background: #0b1220; color: #cbd5e1; }
     tr:nth-child(even) td { background: rgba(2, 6, 23, 0.3); }
-    details {
-      margin-top: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.5rem 0.75rem;
-      background: rgba(2, 6, 23, 0.45);
-    }
-    pre {
-      margin: 0.6rem 0 0;
-      white-space: pre-wrap;
-      font-size: 0.8rem;
-      color: #cbd5e1;
-      max-height: 260px;
-      overflow: auto;
-    }
+    details { margin-top: 0.75rem; border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0.75rem; background: rgba(2, 6, 23, 0.45); }
+    pre { margin: 0.6rem 0 0; white-space: pre-wrap; font-size: 0.8rem; color: #cbd5e1; max-height: 260px; overflow: auto; }
   </style>
 </head>
 <body>
@@ -131,17 +76,15 @@
       <div class="header">
         <div>
           <div class="brand">TRT Australia</div>
-          <h1>PDF Invoice Medication Scraper</h1>
-          <p>Local-only tool: upload invoice PDF, extract totals, and count medication orders + units.</p>
+          <h1>Spreadsheet Invoice Scraper</h1>
+          <p>Local-only tool: upload CSV/XLS/XLSX invoice export to calculate medication counts and totals.</p>
         </div>
         <div class="upload">
-          <input id="pdfInput" type="file" accept="application/pdf" />
+          <input id="sheetInput" type="file" accept=".csv,.xls,.xlsx,.xlsm,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" />
         </div>
       </div>
-      <div class="controls">
-        <button id="analyzeBtn" disabled>Analyze PDF</button>
-      </div>
-      <div id="status" class="status">Select a PDF to begin.</div>
+      <button id="analyzeBtn" disabled>Analyze Spreadsheet</button>
+      <div id="status" class="status">Select a spreadsheet to begin.</div>
     </section>
 
     <section class="card">
@@ -157,7 +100,7 @@
             <th>Medication</th>
             <th>Order Count</th>
             <th>Total Units</th>
-            <th>Order IDs</th>
+            <th>Matching Rows</th>
           </tr>
         </thead>
         <tbody id="medTable"></tbody>
@@ -165,29 +108,27 @@
     </section>
 
     <section class="card">
-      <h2>Invoice Totals Found</h2>
+      <h2>Total Candidates</h2>
       <table>
         <thead>
           <tr>
             <th>Source</th>
             <th>Value</th>
-            <th>Line</th>
+            <th>Row</th>
           </tr>
         </thead>
         <tbody id="totalTable"></tbody>
       </table>
 
       <details>
-        <summary>Debug: reconstructed lines</summary>
+        <summary>Debug: normalized rows preview</summary>
         <pre id="debugText"></pre>
       </details>
     </section>
   </main>
 
   <script type="module">
-    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.8.69/build/pdf.min.mjs';
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs';
+    import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
 
     const MEDICATIONS = [
       {
@@ -211,19 +152,12 @@
       {
         key: 'hcg',
         label: 'HCG',
-        patterns: [
-          /\bhcg\b/i,
-          /human\s+chorionic\s+gonadotroph/i,
-          /gonadotropin/i
-        ]
+        patterns: [/\bhcg\b/i, /human\s+chorionic\s+gonadotroph/i, /gonadotropin/i]
       },
       {
         key: 'anastrazole',
         label: 'ANASTRAZOLE',
-        patterns: [
-          /\banastrazole\b/i,
-          /\banastrozole\b/i
-        ]
+        patterns: [/\banastrazole\b/i, /\banastrozole\b/i]
       },
       {
         key: 'test-c-5',
@@ -236,7 +170,7 @@
       }
     ];
 
-    const pdfInput = document.getElementById('pdfInput');
+    const sheetInput = document.getElementById('sheetInput');
     const analyzeBtn = document.getElementById('analyzeBtn');
     const statusEl = document.getElementById('status');
     const medTable = document.getElementById('medTable');
@@ -246,42 +180,35 @@
 
     let selectedFile = null;
 
-    pdfInput.addEventListener('change', () => {
-      selectedFile = pdfInput.files?.[0] ?? null;
+    sheetInput.addEventListener('change', () => {
+      selectedFile = sheetInput.files?.[0] ?? null;
       analyzeBtn.disabled = !selectedFile;
-      setStatus(selectedFile ? `Ready to analyze: ${selectedFile.name}` : 'Select a PDF to begin.');
+      setStatus(selectedFile ? `Ready: ${selectedFile.name}` : 'Select a spreadsheet to begin.');
     });
 
     analyzeBtn.addEventListener('click', async () => {
       if (!selectedFile) return;
       clearResults();
-      setStatus('Reading PDF...', '');
+      setStatus('Reading spreadsheet...');
 
       try {
-        const extracted = await extractStructuredPdf(selectedFile);
-        const normalizedLines = extracted.lines.map(normalizeText).filter(Boolean);
-        const orderBlocks = buildOrderBlocks(normalizedLines);
-
-        const summarySection = extractInvoiceSummarySection(normalizedLines);
-        const medResults = calculateMedicationTotals(orderBlocks, summarySection);
-        const totalCandidates = findInvoiceTotals(normalizedLines, summarySection);
-        const bestTotal = chooseBestInvoiceTotal(totalCandidates);
+        const rawRows = await readSpreadsheetRows(selectedFile);
+        const normalizedRows = normalizeRows(rawRows);
+        const summaryRows = getSummaryRows(normalizedRows);
+        const itemRows = summaryRows.filter((r) => !r.isShipping && r.description);
+        const medResults = calculateMedicationTotals(itemRows);
+        const totalCandidates = findTotalCandidates(normalizedRows, summaryRows);
+        const bestTotal = chooseBestTotal(totalCandidates);
 
         renderMedicationRows(medResults);
         renderTotalRows(totalCandidates);
-        renderMetrics(medResults, bestTotal, summarySection);
+        renderMetrics(medResults, bestTotal, summaryRows);
 
-        debugText.textContent = [
-          '--- Summary Section Lines ---',
-          ...summarySection.lines,
-          '',
-          '--- First 250 Parsed Lines ---',
-          ...normalizedLines.slice(0, 250)
-        ].join('\n');
-        setStatus(`Done. Parsed ${orderBlocks.length} order blocks, ${summarySection.rows.length} summary rows, and ${totalCandidates.length} total candidates.`, 'success');
+        debugText.textContent = normalizedRows.slice(0, 200).map((r) => JSON.stringify(r)).join('\n');
+        setStatus(`Done. Parsed ${normalizedRows.length} rows, ${summaryRows.length} summary rows.`, 'success');
       } catch (error) {
         console.error(error);
-        setStatus(`Failed to analyze PDF: ${error.message || error}`, 'error');
+        setStatus(`Failed to parse spreadsheet: ${error.message || error}`, 'error');
       }
     });
 
@@ -297,246 +224,177 @@
       debugText.textContent = '';
     }
 
-    async function extractStructuredPdf(file) {
+    async function readSpreadsheetRows(file) {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      const loadingTask = pdfjsLib.getDocument({ data: bytes });
-      const pdf = await loadingTask.promise;
-      const lines = [];
+      const workbook = XLSX.read(bytes, { type: 'array', cellDates: false, raw: false });
+      const rows = [];
 
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
-        const page = await pdf.getPage(pageNum);
-        const content = await page.getTextContent();
-
-        const byY = new Map();
-        content.items.forEach((item) => {
-          const str = String(item.str || '').trim();
-          if (!str) return;
-          const x = item.transform?.[4] || 0;
-          const y = Math.round((item.transform?.[5] || 0) * 2) / 2;
-          const key = `${pageNum}:${y}`;
-          if (!byY.has(key)) byY.set(key, []);
-          byY.get(key).push({ x, str });
+      workbook.SheetNames.forEach((sheetName) => {
+        const sheet = workbook.Sheets[sheetName];
+        const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+        matrix.forEach((cells, rowIndex) => {
+          const text = cells.map((c) => String(c ?? '').trim()).filter(Boolean).join(' | ');
+          rows.push({ sheetName, rowIndex: rowIndex + 1, cells, rowText: text });
         });
+      });
 
-        const grouped = [...byY.entries()]
-          .map(([key, parts]) => {
-            const [, yStr] = key.split(':');
-            return { y: Number(yStr), parts };
-          })
-          .sort((a, b) => b.y - a.y)
-          .map((row) => row.parts.sort((a, b) => a.x - b.x).map((p) => p.str).join(' '));
+      return rows;
+    }
 
-        grouped.forEach((line) => lines.push(`P${pageNum} ${line}`));
-      }
-
-      return { lines };
+    function normalizeRows(rows) {
+      return rows
+        .map((row) => {
+          const cells = row.cells.map((v) => normalizeText(String(v ?? '')));
+          const joined = normalizeText(cells.join(' | '));
+          const moneyValues = extractMoneyValues(joined);
+          const qty = extractQty(cells, joined);
+          const description = inferDescription(cells, joined);
+          const orderId = extractOrderId(joined);
+          return {
+            ...row,
+            cells,
+            rowText: joined,
+            moneyValues,
+            qty,
+            description,
+            orderId,
+            isShipping: /shipping|freight|delivery|postage/i.test(joined)
+          };
+        })
+        .filter((r) => r.rowText.length > 0);
     }
 
     function normalizeText(text) {
-      return text
-        .replace(/[\u00A0\t]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+      return text.replace(/[\u00A0\t]+/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    function buildOrderBlocks(lines) {
-      const blocks = [];
-      let current = null;
+    function getSummaryRows(rows) {
+      const start = rows.findIndex((r) => /invoice\s*summary|summary/i.test(r.rowText));
+      if (start === -1) return rows.filter((r) => r.qty > 0 || /amount\s*due|total|balance\s*due/i.test(r.rowText));
 
-      const startRegex = /#\d{4,}/;
-      lines.forEach((line, idx) => {
-        if (startRegex.test(line)) {
-          if (current) blocks.push(current);
-          current = {
-            id: (line.match(/#\d{4,}/) || [`ROW-${idx + 1}`])[0],
-            text: line
-          };
-        } else if (current) {
-          current.text += ` | ${line}`;
-        }
-      });
-
-      if (current) blocks.push(current);
-
-      if (!blocks.length) {
-        return lines.map((line, idx) => ({ id: `ROW-${idx + 1}`, text: line }));
+      const picked = [];
+      for (let i = start; i < rows.length; i += 1) {
+        const row = rows[i];
+        picked.push(row);
+        if (i > start && /terms|notes?|payment|thank\s*you|remit/i.test(row.rowText)) break;
       }
-
-      return blocks;
+      return picked;
     }
 
-    function calculateMedicationTotals(orderBlocks, summarySection) {
+    function calculateMedicationTotals(rows) {
       return MEDICATIONS.map((med) => {
         const orderIds = new Set();
         let units = 0;
-        let summaryUnits = 0;
+        let matchingRows = 0;
 
-        orderBlocks.forEach((block) => {
-          const hit = med.patterns.some((pattern) => pattern.test(block.text));
+        rows.forEach((row) => {
+          const hit = med.patterns.some((p) => p.test(row.description || row.rowText));
           if (!hit) return;
-          orderIds.add(block.id);
-          units += extractQuantityFromBlock(block.text);
-        });
-
-        summarySection.rows.forEach((row) => {
-          if (!row.productText || row.isShipping) return;
-          const hit = med.patterns.some((pattern) => pattern.test(row.productText));
-          if (!hit) return;
-          summaryUnits += row.qty;
+          matchingRows += 1;
+          units += row.qty || 1;
+          if (row.orderId) orderIds.add(row.orderId);
+          else orderIds.add(`ROW-${row.sheetName}-${row.rowIndex}`);
         });
 
         return {
           ...med,
           orderCount: orderIds.size,
-          units: Math.max(units, summaryUnits),
-          ids: [...orderIds].slice(0, 8)
+          units,
+          matchingRows
         };
       });
     }
 
-    function extractQuantityFromBlock(text) {
-      const qtyMatches = [...text.matchAll(/(?:^|\s|\|)(\d+(?:\.\d+)?)\s*\$\s*\d+[\d,]*(?:\.\d{2})?/g)];
-      if (!qtyMatches.length) return 1;
-      const sum = qtyMatches.reduce((acc, m) => acc + Number.parseFloat(m[1]), 0);
-      return Number.isFinite(sum) && sum > 0 ? sum : 1;
-    }
+    function findTotalCandidates(allRows, summaryRows) {
+      const rows = [...summaryRows, ...allRows];
+      const candidates = [];
 
-    function findInvoiceTotals(lines, summarySection) {
-      const keyword = /(invoice\s*total|summary\s*total|amount\s*due|balance\s*due|grand\s*total|total\s*(inc|incl)\s*gst)/i;
-      const excluded = /(subtotal|unit\s*price|line\s*total)/i;
-      const found = [];
+      rows.forEach((row) => {
+        if (!row.moneyValues.length) return;
+        if (/shipping|freight|delivery|postage/i.test(row.rowText)) return;
 
-      if (summarySection.total !== null) {
-        found.push({
-          source: 'Invoice Summary section',
-          value: summarySection.total,
-          line: summarySection.totalLine || 'Summary total row',
-          idx: 999999,
-          score: 3000
-        });
-      }
-
-      lines.forEach((line, idx) => {
-        if (!keyword.test(line) || excluded.test(line)) return;
-        const monies = extractMoneyValues(line);
-        if (!monies.length) return;
-
-        const value = monies[monies.length - 1];
-        const source = /summary/i.test(line)
-          ? 'Summary section'
-          : /invoice/i.test(line)
-            ? 'Invoice section'
-            : 'Total line';
-
-        found.push({ source, value, line, idx, score: scoreTotalLine(line, idx) });
+        if (/(amount\s*due|balance\s*due|grand\s*total|invoice\s*total|summary\s*total|total\s*(inc|incl)\s*gst)/i.test(row.rowText)) {
+          candidates.push({
+            source: /summary/i.test(row.rowText) ? 'Summary section' : 'Total row',
+            value: row.moneyValues[row.moneyValues.length - 1],
+            row
+          });
+        }
       });
 
-      if (!found.length) {
-        lines.forEach((line, idx) => {
-          if (!/(amount\s*due|grand\s*total|balance\s*due)/i.test(line)) return;
-          const monies = extractMoneyValues(line);
-          if (!monies.length) return;
-          found.push({ source: 'Fallback total line', value: monies[monies.length - 1], line, idx, score: scoreTotalLine(line, idx) - 10 });
+      if (!candidates.length) {
+        summaryRows.forEach((row) => {
+          if (row.moneyValues.length && !/shipping|freight|delivery|postage/i.test(row.rowText)) {
+            candidates.push({ source: 'Summary fallback', value: row.moneyValues[row.moneyValues.length - 1], row });
+          }
         });
       }
 
-      return dedupeTotals(found);
+      return dedupeCandidates(candidates);
     }
 
-    function extractInvoiceSummarySection(lines) {
-      const startIndex = lines.findIndex((line) => /invoice\s*summary|summary/i.test(line));
-      const linesInSection = [];
-      const rows = [];
-      let total = null;
-      let totalLine = '';
-
-      if (startIndex === -1) {
-        return { lines: [], rows: [], total: null, totalLine: '' };
-      }
-
-      for (let i = startIndex; i < lines.length; i += 1) {
-        const line = lines[i];
-        linesInSection.push(line);
-
-        if (i !== startIndex && /terms|payment|thank you|remit|notes?/i.test(line)) break;
-
-        const money = extractMoneyValues(line);
-        if (/(amount\s*due|balance\s*due|grand\s*total|summary\s*total|invoice\s*total|total\s*(inc|incl)\s*gst)/i.test(line) && money.length) {
-          total = money[money.length - 1];
-          totalLine = line;
-        }
-
-        const row = parseSummaryItemRow(line);
-        if (row) rows.push(row);
-      }
-
-      if (total === null) {
-        const lastStrongTotal = [...linesInSection].reverse().find((line) => /(amount\s*due|balance\s*due|grand\s*total)/i.test(line) && extractMoneyValues(line).length);
-        if (lastStrongTotal) {
-          const money = extractMoneyValues(lastStrongTotal);
-          total = money[money.length - 1];
-          totalLine = lastStrongTotal;
-        }
-      }
-
-      return { lines: linesInSection, rows, total, totalLine };
-    }
-
-    function parseSummaryItemRow(line) {
-      if (/invoice\s*summary|summary\s*total|invoice\s*total|amount\s*due|balance\s*due|grand\s*total/i.test(line)) {
-        return null;
-      }
-
-      const isShipping = /shipping|freight|delivery|postage/i.test(line);
-      const qtyMatch = line.match(/(?:^|\s)(\d+(?:\.\d+)?)\s+\$\s*[\d,]+(?:\.\d{2})?/);
-      const qty = qtyMatch ? Number.parseFloat(qtyMatch[1]) : null;
-      if (!qty || qty <= 0) return null;
-
-      const productText = line
-        .replace(/^P\d+\s+/i, '')
-        .replace(/#\d{4,}.*?\)\s*/g, ' ')
-        .replace(/\s+\$\s*[\d,]+(?:\.\d{2})?.*$/, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      return {
-        qty,
-        productText,
-        isShipping,
-        rawLine: line
-      };
-    }
-
-    function extractMoneyValues(text) {
-      const matches = [...text.matchAll(/\$\s*([\d,]+(?:\.\d{2})?)/g)];
-      return matches
-        .map((m) => Number.parseFloat(m[1].replace(/,/g, '')))
-        .filter((n) => Number.isFinite(n));
-    }
-
-    function scoreTotalLine(line, idx) {
-      let score = idx;
-      if (/amount\s*due|balance\s*due/i.test(line)) score += 1000;
-      if (/grand\s*total/i.test(line)) score += 900;
-      if (/summary\s*total/i.test(line)) score += 800;
-      if (/invoice\s*total/i.test(line)) score += 700;
-      if (/total\s*(inc|incl)\s*gst/i.test(line)) score += 600;
-      return score;
-    }
-
-    function dedupeTotals(rows) {
+    function dedupeCandidates(candidates) {
       const seen = new Set();
-      return rows.filter((row) => {
-        const key = `${row.value}|${row.line}`;
+      return candidates.filter((c) => {
+        const key = `${c.value}|${c.row.sheetName}|${c.row.rowIndex}`;
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
       });
     }
 
-    function chooseBestInvoiceTotal(totals) {
-      if (!totals.length) return null;
-      return [...totals].sort((a, b) => b.score - a.score || b.value - a.value)[0];
+    function chooseBestTotal(candidates) {
+      if (!candidates.length) return null;
+      return [...candidates].sort((a, b) => scoreCandidate(b) - scoreCandidate(a) || b.value - a.value)[0];
+    }
+
+    function scoreCandidate(candidate) {
+      const text = candidate.row.rowText;
+      let score = 0;
+      if (/amount\s*due|balance\s*due/i.test(text)) score += 100;
+      if (/grand\s*total/i.test(text)) score += 90;
+      if (/summary\s*total/i.test(text)) score += 80;
+      if (/invoice\s*total/i.test(text)) score += 70;
+      if (/summary/i.test(candidate.source)) score += 15;
+      score += candidate.row.rowIndex / 1000;
+      return score;
+    }
+
+    function extractMoneyValues(text) {
+      return [...text.matchAll(/\$?\s*([\d]{1,3}(?:,[\d]{3})*(?:\.\d{2})|[\d]+(?:\.\d{2}))/g)]
+        .map((m) => Number.parseFloat(m[1].replace(/,/g, '')))
+        .filter((n) => Number.isFinite(n) && n >= 0);
+    }
+
+    function extractQty(cells, joined) {
+      const qtyHeaderIndex = cells.findIndex((c) => /^qty|quantity$/i.test(c));
+      if (qtyHeaderIndex !== -1) return 0;
+
+      const qtyByPattern = joined.match(/(?:^|\|\s|\s)(\d+(?:\.\d+)?)\s*(?:\||$)/);
+      if (qtyByPattern) {
+        const q = Number.parseFloat(qtyByPattern[1]);
+        if (Number.isFinite(q) && q > 0 && q < 10000) return q;
+      }
+
+      const qtyBeforePrice = joined.match(/(\d+(?:\.\d+)?)\s+\$\s*[\d,]+(?:\.\d{2})?/);
+      if (qtyBeforePrice) {
+        const q = Number.parseFloat(qtyBeforePrice[1]);
+        if (Number.isFinite(q) && q > 0 && q < 10000) return q;
+      }
+
+      return 1;
+    }
+
+    function inferDescription(cells, joined) {
+      const cleaned = cells
+        .map((c) => c.replace(/\$\s*[\d,]+(?:\.\d{2})?/g, '').trim())
+        .filter((c) => c && !/^\d+(?:\.\d+)?$/.test(c));
+      return cleaned.join(' ').trim() || joined;
+    }
+
+    function extractOrderId(text) {
+      const m = text.match(/#\d{4,}/);
+      return m ? m[0] : '';
     }
 
     function renderMedicationRows(rows) {
@@ -544,59 +402,61 @@
         <tr>
           <td>${escapeHtml(row.label)}</td>
           <td><strong>${row.orderCount}</strong></td>
-          <td><strong>${row.units}</strong></td>
-          <td>${escapeHtml(row.ids.join(', ') || 'None')}</td>
+          <td><strong>${formatNumber(row.units)}</strong></td>
+          <td>${row.matchingRows}</td>
         </tr>
       `).join('');
     }
 
     function renderTotalRows(rows) {
       if (!rows.length) {
-        totalTable.innerHTML = '<tr><td colspan="3">No invoice total values found.</td></tr>';
+        totalTable.innerHTML = '<tr><td colspan="3">No totals detected.</td></tr>';
         return;
       }
 
-      totalTable.innerHTML = rows
-        .sort((a, b) => b.score - a.score)
+      totalTable.innerHTML = [...rows]
+        .sort((a, b) => scoreCandidate(b) - scoreCandidate(a))
         .map((row) => `
           <tr>
             <td>${escapeHtml(row.source)}</td>
             <td>$${row.value.toFixed(2)}</td>
-            <td>${escapeHtml(row.line)}</td>
+            <td>${escapeHtml(`${row.row.sheetName}#${row.row.rowIndex} - ${row.row.rowText}`)}</td>
           </tr>
         `).join('');
     }
 
-    function renderMetrics(medRows, bestTotal, summarySection) {
-      const totalOrderCount = medRows.reduce((sum, row) => sum + row.orderCount, 0);
+    function renderMetrics(medRows, bestTotal, summaryRows) {
+      const totalOrders = medRows.reduce((sum, row) => sum + row.orderCount, 0);
       const totalUnits = medRows.reduce((sum, row) => sum + row.units, 0);
-      const summaryItemOrders = summarySection.rows
-        .filter((row) => !row.isShipping)
+      const summaryOrdersExShipping = summaryRows
+        .filter((r) => !r.isShipping && r.qty > 0 && r.description)
         .reduce((sum, row) => sum + row.qty, 0);
-      const testosteroneCombinedOrders = medRows
-        .filter((row) => row.key.startsWith('test-'))
-        .reduce((sum, row) => sum + row.orderCount, 0);
-      const nonTestosteroneOrders = totalOrderCount - testosteroneCombinedOrders;
-      const enanthate12Orders = medRows.find((r) => r.key === 'test-e-12')?.orderCount || 0;
-      const enanthate5Orders = medRows.find((r) => r.key === 'test-e-5')?.orderCount || 0;
+      const testosteroneCombined = medRows.filter((m) => m.key.startsWith('test-')).reduce((sum, m) => sum + m.orderCount, 0);
+      const nonTestosterone = totalOrders - testosteroneCombined;
+      const en12 = medRows.find((m) => m.key === 'test-e-12')?.orderCount || 0;
+      const en5 = medRows.find((m) => m.key === 'test-e-5')?.orderCount || 0;
 
       const metrics = [
         { label: 'Invoice Total (Best Match)', value: bestTotal ? `$${bestTotal.value.toFixed(2)}` : 'Not found' },
-        { label: 'Summary Item Orders (Excl Shipping)', value: String(summaryItemOrders) },
-        { label: 'Total Orders (All Medications)', value: String(totalOrderCount) },
-        { label: 'Total Units (All Medications)', value: String(totalUnits) },
-        { label: 'Testosterone Orders (Combined)', value: String(testosteroneCombinedOrders) },
-        { label: 'Non-Testosterone Orders', value: String(nonTestosteroneOrders) },
-        { label: 'Enanthate 12ml Orders', value: String(enanthate12Orders) },
-        { label: 'Enanthate 5ml Orders', value: String(enanthate5Orders) }
+        { label: 'Summary Item Orders (Excl Shipping)', value: formatNumber(summaryOrdersExShipping) },
+        { label: 'Total Orders (All Medications)', value: String(totalOrders) },
+        { label: 'Total Units (All Medications)', value: formatNumber(totalUnits) },
+        { label: 'Testosterone Orders (Combined)', value: String(testosteroneCombined) },
+        { label: 'Non-Testosterone Orders', value: String(nonTestosterone) },
+        { label: 'Enanthate 12ml Orders', value: String(en12) },
+        { label: 'Enanthate 5ml Orders', value: String(en5) }
       ];
 
-      totalsGrid.innerHTML = metrics.map((metric) => `
+      totalsGrid.innerHTML = metrics.map((m) => `
         <article class="metric">
-          <div class="label">${escapeHtml(metric.label)}</div>
-          <div class="value">${escapeHtml(metric.value)}</div>
+          <div class="label">${escapeHtml(m.label)}</div>
+          <div class="value">${escapeHtml(m.value)}</div>
         </article>
       `).join('');
+    }
+
+    function formatNumber(n) {
+      return Number.isInteger(n) ? String(n) : n.toFixed(2);
     }
 
     function escapeHtml(value) {
