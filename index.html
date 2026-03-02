@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRT Australia PDF Invoice Scraper</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #06b6d4;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 20% 0%, #1e293b, var(--bg) 45%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1100px, 95vw);
+      margin: 2rem auto;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    h1, h2, h3 { margin: 0 0 0.5rem; }
+    p { margin: 0.25rem 0; color: var(--muted); }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .upload {
+      border: 1px dashed #64748b;
+      border-radius: 12px;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.65);
+    }
+
+    input[type="file"] {
+      color: var(--text);
+    }
+
+    button {
+      background: linear-gradient(90deg, #0891b2, #0ea5e9);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(2, 6, 23, 0.6);
+      padding: 0.75rem;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .metric .value {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.6rem;
+      border-bottom: 1px solid #1e293b;
+      vertical-align: top;
+      font-size: 0.93rem;
+    }
+
+    th {
+      background: #0b1220;
+      color: #cbd5e1;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:nth-child(even) td { background: rgba(2, 6, 23, 0.3); }
+
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+    }
+
+    .status.error { color: var(--bad); }
+    .status.success { color: var(--good); }
+
+    details {
+      margin-top: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.5rem 0.75rem;
+      background: rgba(2, 6, 23, 0.45);
+    }
+
+    pre {
+      margin: 0.6rem 0 0;
+      white-space: pre-wrap;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      max-height: 260px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <div class="header">
+        <div>
+          <div class="brand">TRT Australia</div>
+          <h1>PDF Invoice Medication Scraper</h1>
+          <p>Upload a PDF invoice and extract medication counts + total invoice value from invoice/summary sections.</p>
+        </div>
+        <div class="upload">
+          <input id="pdfInput" type="file" accept="application/pdf" />
+        </div>
+      </div>
+      <div class="controls">
+        <button id="analyzeBtn" disabled>Analyze PDF</button>
+      </div>
+      <div id="status" class="status">Select a PDF to begin.</div>
+    </section>
+
+    <section class="card">
+      <h2>Key Totals</h2>
+      <div class="grid" id="totalsGrid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Medication Breakdown</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Medication</th>
+            <th>Order Count</th>
+            <th>Detected Units</th>
+          </tr>
+        </thead>
+        <tbody id="medTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Invoice Totals Found</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Value</th>
+            <th>Detected Line</th>
+          </tr>
+        </thead>
+        <tbody id="totalTable"></tbody>
+      </table>
+
+      <details>
+        <summary>Debug: Extracted text preview</summary>
+        <pre id="debugText"></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.8.69/build/pdf.min.mjs" type="module"></script>
+  <script type="module">
+    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.8.69/build/pdf.min.mjs';
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs';
+
+    const meds = [
+      {
+        key: 'test-e-12',
+        label: 'TESTOSTERONE ENANTHATE 250mg/ml 12mls',
+        aliases: [
+          /testosterone\s+enant?ha?te\s+250\s*mg\s*\/\s*ml\s*12\s*mls?/gi,
+          /testosterone\s+enant?ha?te\s+12\s*mls?/gi,
+          /enant?ha?te\s*250\s*mg\s*\/\s*ml\s*12\s*ml/gi
+        ]
+      },
+      {
+        key: 'test-e-5',
+        label: 'TESTOSTERONE ENANTHATE 250mg/ml 5mls',
+        aliases: [
+          /testosterone\s+enant?ha?te\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/gi,
+          /testosterone\s+enant?ha?te\s+5\s*mls?/gi,
+          /enant?ha?te\s*250\s*mg\s*\/\s*ml\s*5\s*ml/gi
+        ]
+      },
+      {
+        key: 'hcg',
+        label: 'HCG',
+        aliases: [
+          /\bhcg\b/gi,
+          /human\s+chorionic\s+gonadotrophin/gi,
+          /gonadotropin/gi
+        ]
+      },
+      {
+        key: 'anastrazole',
+        label: 'ANASTRAZOLE',
+        aliases: [
+          /\banastrazole\b/gi,
+          /\banastrozole\b/gi
+        ]
+      },
+      {
+        key: 'test-c-5',
+        label: 'Compounded Testosterone Cypionate 250mg/ml 5mls',
+        aliases: [
+          /compounded\s+testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/gi,
+          /testosterone\s+cypionate\s+250\s*mg\s*\/\s*ml\s*5\s*mls?/gi,
+          /cypionate\s+250\s*mg\s*\/\s*ml\s*5\s*ml/gi
+        ]
+      }
+    ];
+
+    const pdfInput = document.getElementById('pdfInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const statusEl = document.getElementById('status');
+    const medTable = document.getElementById('medTable');
+    const totalTable = document.getElementById('totalTable');
+    const totalsGrid = document.getElementById('totalsGrid');
+    const debugText = document.getElementById('debugText');
+
+    let selectedFile = null;
+
+    pdfInput.addEventListener('change', () => {
+      selectedFile = pdfInput.files?.[0] || null;
+      analyzeBtn.disabled = !selectedFile;
+      setStatus(selectedFile ? `Ready to analyze: ${selectedFile.name}` : 'Select a PDF to begin.');
+    });
+
+    analyzeBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      clearResults();
+      setStatus('Reading PDF...', '');
+
+      try {
+        const text = await extractPdfText(selectedFile);
+        debugText.textContent = text.slice(0, 12000) || 'No text extracted.';
+        const normalized = normalizeText(text);
+
+        const medResults = getMedicationResults(normalized);
+        const invoiceTotals = findInvoiceTotals(normalized);
+        const bestTotal = chooseBestInvoiceTotal(invoiceTotals);
+
+        renderMedicationRows(medResults);
+        renderTotalsRows(invoiceTotals);
+        renderKeyMetrics(medResults, bestTotal);
+
+        setStatus(`Completed. Parsed ${medResults.length} medication targets and ${invoiceTotals.length} total-value candidates.`, 'success');
+      } catch (error) {
+        console.error(error);
+        setStatus(`Failed to analyze PDF: ${error.message || error}`, 'error');
+      }
+    });
+
+    function setStatus(text, type = '') {
+      statusEl.textContent = text;
+      statusEl.className = `status ${type}`.trim();
+    }
+
+    function clearResults() {
+      medTable.innerHTML = '';
+      totalTable.innerHTML = '';
+      totalsGrid.innerHTML = '';
+      debugText.textContent = '';
+    }
+
+    async function extractPdfText(file) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const loadingTask = pdfjsLib.getDocument({ data: bytes });
+      const pdf = await loadingTask.promise;
+      const pages = [];
+
+      for (let i = 1; i <= pdf.numPages; i += 1) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const strings = content.items.map(item => item.str || '').join(' ');
+        pages.push(`--- Page ${i} ---\n${strings}`);
+      }
+
+      return pages.join('\n\n');
+    }
+
+    function normalizeText(text) {
+      return text
+        .replace(/[\u00A0\t]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function getMedicationResults(text) {
+      return meds.map(med => {
+        let count = 0;
+        const hitLines = new Set();
+
+        med.aliases.forEach((regex) => {
+          const matches = [...text.matchAll(regex)];
+          count += matches.length;
+          matches.forEach((m) => {
+            const snippet = text.slice(Math.max(0, m.index - 40), Math.min(text.length, m.index + m[0].length + 40));
+            hitLines.add(snippet);
+          });
+        });
+
+        return {
+          ...med,
+          count,
+          snippets: Array.from(hitLines).slice(0, 3)
+        };
+      });
+    }
+
+    function findInvoiceTotals(text) {
+      const targets = [
+        { label: 'Invoice section', pattern: /(invoice\s*(total|amount\s*due|balance\s*due)[^\d$]{0,15})(\$?\s?[\d,]+(?:\.\d{2})?)/gi },
+        { label: 'Summary section', pattern: /(summary\s*(total|amount\s*due|balance\s*due)[^\d$]{0,15})(\$?\s?[\d,]+(?:\.\d{2})?)/gi },
+        { label: 'Generic total', pattern: /((?:total|amount\s*due|balance\s*due)[^\d$]{0,15})(\$?\s?[\d,]+(?:\.\d{2})?)/gi }
+      ];
+
+      const found = [];
+      targets.forEach(({ label, pattern }) => {
+        const matches = [...text.matchAll(pattern)];
+        matches.forEach(match => {
+          const rawValue = match[3] || match[2] || '';
+          const value = parseMoney(rawValue);
+          if (value !== null) {
+            found.push({
+              source: label,
+              value,
+              line: match[0].trim()
+            });
+          }
+        });
+      });
+
+      return dedupeTotals(found);
+    }
+
+    function dedupeTotals(rows) {
+      const keySet = new Set();
+      return rows.filter(row => {
+        const key = `${row.source}|${row.value}|${row.line}`;
+        if (keySet.has(key)) return false;
+        keySet.add(key);
+        return true;
+      });
+    }
+
+    function parseMoney(value) {
+      if (!value) return null;
+      const cleaned = value.replace(/[^\d.]/g, '');
+      if (!cleaned) return null;
+      const parsed = Number.parseFloat(cleaned);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function chooseBestInvoiceTotal(totals) {
+      if (!totals.length) return null;
+      const priority = ['Summary section', 'Invoice section', 'Generic total'];
+      const ordered = [...totals].sort((a, b) => {
+        const pa = priority.indexOf(a.source);
+        const pb = priority.indexOf(b.source);
+        if (pa !== pb) return pa - pb;
+        return b.value - a.value;
+      });
+      return ordered[0];
+    }
+
+    function renderMedicationRows(rows) {
+      medTable.innerHTML = rows.map(r => `
+        <tr>
+          <td>${escapeHtml(r.label)}</td>
+          <td><strong>${r.count}</strong></td>
+          <td>${escapeHtml(r.snippets.join(' | ') || 'None detected')}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderTotalsRows(rows) {
+      if (!rows.length) {
+        totalTable.innerHTML = '<tr><td colspan="3">No invoice total values found.</td></tr>';
+        return;
+      }
+
+      totalTable.innerHTML = rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.source)}</td>
+          <td>$${row.value.toFixed(2)}</td>
+          <td>${escapeHtml(row.line)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderKeyMetrics(medRows, bestTotal) {
+      const totalMedicationOrders = medRows.reduce((sum, row) => sum + row.count, 0);
+      const testosteroneCombined = medRows
+        .filter(row => row.key.startsWith('test-'))
+        .reduce((sum, row) => sum + row.count, 0);
+      const nonTestosteroneCombined = totalMedicationOrders - testosteroneCombined;
+      const count12ml = medRows.find(r => r.key === 'test-e-12')?.count || 0;
+      const count5ml = medRows.find(r => r.key === 'test-e-5')?.count || 0;
+
+      const metrics = [
+        { label: 'Best Invoice Total', value: bestTotal ? `$${bestTotal.value.toFixed(2)}` : 'Not found' },
+        { label: 'All Medication Orders (Combined)', value: String(totalMedicationOrders) },
+        { label: 'Testosterone Orders (Combined)', value: String(testosteroneCombined) },
+        { label: 'Non-Testosterone Orders', value: String(nonTestosteroneCombined) },
+        { label: 'Testosterone Enanthate 12ml Orders', value: String(count12ml) },
+        { label: 'Testosterone Enanthate 5ml Orders', value: String(count5ml) }
+      ];
+
+      totalsGrid.innerHTML = metrics.map(m => `
+        <article class="metric">
+          <div class="label">${escapeHtml(m.label)}</div>
+          <div class="value">${escapeHtml(m.value)}</div>
+        </article>
+      `).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+  </script>
+</body>
+</html>
