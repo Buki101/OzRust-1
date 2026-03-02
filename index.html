@@ -262,16 +262,23 @@
         const normalizedLines = extracted.lines.map(normalizeText).filter(Boolean);
         const orderBlocks = buildOrderBlocks(normalizedLines);
 
-        const medResults = calculateMedicationTotals(orderBlocks);
-        const totalCandidates = findInvoiceTotals(normalizedLines);
+        const summarySection = extractInvoiceSummarySection(normalizedLines);
+        const medResults = calculateMedicationTotals(orderBlocks, summarySection);
+        const totalCandidates = findInvoiceTotals(normalizedLines, summarySection);
         const bestTotal = chooseBestInvoiceTotal(totalCandidates);
 
         renderMedicationRows(medResults);
         renderTotalRows(totalCandidates);
-        renderMetrics(medResults, bestTotal);
+        renderMetrics(medResults, bestTotal, summarySection);
 
-        debugText.textContent = normalizedLines.slice(0, 300).join('\n');
-        setStatus(`Done. Parsed ${orderBlocks.length} order blocks and ${totalCandidates.length} total candidates.`, 'success');
+        debugText.textContent = [
+          '--- Summary Section Lines ---',
+          ...summarySection.lines,
+          '',
+          '--- First 250 Parsed Lines ---',
+          ...normalizedLines.slice(0, 250)
+        ].join('\n');
+        setStatus(`Done. Parsed ${orderBlocks.length} order blocks, ${summarySection.rows.length} summary rows, and ${totalCandidates.length} total candidates.`, 'success');
       } catch (error) {
         console.error(error);
         setStatus(`Failed to analyze PDF: ${error.message || error}`, 'error');
@@ -358,10 +365,11 @@
       return blocks;
     }
 
-    function calculateMedicationTotals(orderBlocks) {
+    function calculateMedicationTotals(orderBlocks, summarySection) {
       return MEDICATIONS.map((med) => {
         const orderIds = new Set();
         let units = 0;
+        let summaryUnits = 0;
 
         orderBlocks.forEach((block) => {
           const hit = med.patterns.some((pattern) => pattern.test(block.text));
@@ -370,10 +378,17 @@
           units += extractQuantityFromBlock(block.text);
         });
 
+        summarySection.rows.forEach((row) => {
+          if (!row.productText || row.isShipping) return;
+          const hit = med.patterns.some((pattern) => pattern.test(row.productText));
+          if (!hit) return;
+          summaryUnits += row.qty;
+        });
+
         return {
           ...med,
           orderCount: orderIds.size,
-          units,
+          units: Math.max(units, summaryUnits),
           ids: [...orderIds].slice(0, 8)
         };
       });
@@ -386,10 +401,20 @@
       return Number.isFinite(sum) && sum > 0 ? sum : 1;
     }
 
-    function findInvoiceTotals(lines) {
+    function findInvoiceTotals(lines, summarySection) {
       const keyword = /(invoice\s*total|summary\s*total|amount\s*due|balance\s*due|grand\s*total|total\s*(inc|incl)\s*gst)/i;
       const excluded = /(subtotal|unit\s*price|line\s*total)/i;
       const found = [];
+
+      if (summarySection.total !== null) {
+        found.push({
+          source: 'Invoice Summary section',
+          value: summarySection.total,
+          line: summarySection.totalLine || 'Summary total row',
+          idx: 999999,
+          score: 3000
+        });
+      }
 
       lines.forEach((line, idx) => {
         if (!keyword.test(line) || excluded.test(line)) return;
@@ -416,6 +441,70 @@
       }
 
       return dedupeTotals(found);
+    }
+
+    function extractInvoiceSummarySection(lines) {
+      const startIndex = lines.findIndex((line) => /invoice\s*summary|summary/i.test(line));
+      const linesInSection = [];
+      const rows = [];
+      let total = null;
+      let totalLine = '';
+
+      if (startIndex === -1) {
+        return { lines: [], rows: [], total: null, totalLine: '' };
+      }
+
+      for (let i = startIndex; i < lines.length; i += 1) {
+        const line = lines[i];
+        linesInSection.push(line);
+
+        if (i !== startIndex && /terms|payment|thank you|remit|notes?/i.test(line)) break;
+
+        const money = extractMoneyValues(line);
+        if (/(amount\s*due|balance\s*due|grand\s*total|summary\s*total|invoice\s*total|total\s*(inc|incl)\s*gst)/i.test(line) && money.length) {
+          total = money[money.length - 1];
+          totalLine = line;
+        }
+
+        const row = parseSummaryItemRow(line);
+        if (row) rows.push(row);
+      }
+
+      if (total === null) {
+        const lastStrongTotal = [...linesInSection].reverse().find((line) => /(amount\s*due|balance\s*due|grand\s*total)/i.test(line) && extractMoneyValues(line).length);
+        if (lastStrongTotal) {
+          const money = extractMoneyValues(lastStrongTotal);
+          total = money[money.length - 1];
+          totalLine = lastStrongTotal;
+        }
+      }
+
+      return { lines: linesInSection, rows, total, totalLine };
+    }
+
+    function parseSummaryItemRow(line) {
+      if (/invoice\s*summary|summary\s*total|invoice\s*total|amount\s*due|balance\s*due|grand\s*total/i.test(line)) {
+        return null;
+      }
+
+      const isShipping = /shipping|freight|delivery|postage/i.test(line);
+      const qtyMatch = line.match(/(?:^|\s)(\d+(?:\.\d+)?)\s+\$\s*[\d,]+(?:\.\d{2})?/);
+      const qty = qtyMatch ? Number.parseFloat(qtyMatch[1]) : null;
+      if (!qty || qty <= 0) return null;
+
+      const productText = line
+        .replace(/^P\d+\s+/i, '')
+        .replace(/#\d{4,}.*?\)\s*/g, ' ')
+        .replace(/\s+\$\s*[\d,]+(?:\.\d{2})?.*$/, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      return {
+        qty,
+        productText,
+        isShipping,
+        rawLine: line
+      };
     }
 
     function extractMoneyValues(text) {
@@ -478,9 +567,12 @@
         `).join('');
     }
 
-    function renderMetrics(medRows, bestTotal) {
+    function renderMetrics(medRows, bestTotal, summarySection) {
       const totalOrderCount = medRows.reduce((sum, row) => sum + row.orderCount, 0);
       const totalUnits = medRows.reduce((sum, row) => sum + row.units, 0);
+      const summaryItemOrders = summarySection.rows
+        .filter((row) => !row.isShipping)
+        .reduce((sum, row) => sum + row.qty, 0);
       const testosteroneCombinedOrders = medRows
         .filter((row) => row.key.startsWith('test-'))
         .reduce((sum, row) => sum + row.orderCount, 0);
@@ -490,6 +582,7 @@
 
       const metrics = [
         { label: 'Invoice Total (Best Match)', value: bestTotal ? `$${bestTotal.value.toFixed(2)}` : 'Not found' },
+        { label: 'Summary Item Orders (Excl Shipping)', value: String(summaryItemOrders) },
         { label: 'Total Orders (All Medications)', value: String(totalOrderCount) },
         { label: 'Total Units (All Medications)', value: String(totalUnits) },
         { label: 'Testosterone Orders (Combined)', value: String(testosteroneCombinedOrders) },
