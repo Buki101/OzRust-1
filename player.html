@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player Profile | NetherPunch Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/public/css/player.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout player-layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <span class="brand-icon">🎮</span>
+          <a href="/">Home</a>
+          <a href="/ozrust">OzRust</a>
+          <a href="/rustygoose">RustyGoose</a>
+        </nav>
+
+        <div class="logo-block">NETHERPUNCH</div>
+
+        <div class="right-nav">
+          <a class="btn btn-ghost" id="authNavLink" href="/signin">Sign In</a>
+        </div>
+      </header>
+
+      <section class="player-shell">
+        <a href="/leaderboard" class="back-link">← Back to leaderboard</a>
+        <p id="playerStatus" class="player-status">Loading player...</p>
+
+        <article id="playerCard" class="player-card" hidden>
+          <header class="player-header">
+            <h1 id="playerName">-</h1>
+            <p id="playerMeta">-</p>
+          </header>
+          <div class="stats-grid" id="statsGrid"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="/public/js/player.js"></script>
+    <script src="/public/js/auth.js"></script>
+    <script src="/public/js/nav-auth.js"></script>
+  </body>
+</html>
