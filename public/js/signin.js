@@ -6,6 +6,7 @@ const statusEl = document.getElementById('signinStatus');
 
 const params = new URLSearchParams(window.location.search);
 const nextPath = params.get('next') || '/';
+const AUTH_USERNAME_KEY = 'ozrust_auth_username';
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -33,6 +34,13 @@ form.addEventListener('submit', async (event) => {
 
     statusEl.classList.add('success');
     statusEl.textContent = 'Signed in. Redirecting...';
+
+    try {
+      localStorage.setItem(AUTH_USERNAME_KEY, payload.username || body.username);
+    } catch (_error) {
+      // Ignore storage failures and continue sign-in redirect flow.
+    }
+
     window.location.href = nextPath;
   } catch (error) {
     statusEl.textContent = error.message || 'Sign in failed.';
