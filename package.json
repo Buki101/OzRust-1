@@ -1,0 +1,16 @@
+{
+  "name": "ozrust-1",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NetherPunch/OzRust website with MariaDB-backed leaderboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check:vercel-config": "node scripts/validate-vercel-config.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mysql2": "^3.11.5"
+  }
+}
