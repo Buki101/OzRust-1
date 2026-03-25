@@ -5,7 +5,7 @@ const form = document.getElementById('signinForm');
 const statusEl = document.getElementById('signinStatus');
 
 const params = new URLSearchParams(window.location.search);
-const nextPath = params.get('next') || '/';
+const nextPath = params.get('next') || '/account';
 const AUTH_USERNAME_KEY = 'ozrust_auth_username';
 
 form.addEventListener('submit', async (event) => {

@@ -8,7 +8,7 @@ function renderSignedOutNav() {
 
 function renderSignedInNav(username) {
   authNavLink.textContent = `G'day ${username}`;
-  authNavLink.href = '/';
+  authNavLink.href = '/account';
 }
 
 async function hydrateAuthNav() {

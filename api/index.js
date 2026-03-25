@@ -233,6 +233,10 @@ app.get('/signin', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'signin.html'));
 });
 
+app.get('/account', requireAuthPage, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'account.html'));
+});
+
 app.get('/leaderboard', requireAuthPage, (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'leaderboard.html'));
 });

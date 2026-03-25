@@ -220,6 +220,20 @@ function getKitId() {
   return parts[parts.length - 1];
 }
 
+function recordPurchase(username, selectedKit) {
+  if (!username || !selectedKit || !window.ozPurchases?.addPurchase) return;
+
+  window.ozPurchases.addPurchase({
+    username,
+    kitId: getKitId(),
+    kitTitle: selectedKit.title,
+    server: selectedKit.server,
+    price: selectedKit.price,
+    status: 'Checkout started',
+    purchasedAt: new Date().toISOString()
+  });
+}
+
 
 
 function showCheckoutSigninPrompt() {
@@ -267,6 +281,8 @@ addToCartBtn.addEventListener('click', async () => {
       showCheckoutSigninPrompt();
       return;
     }
+
+    recordPurchase(payload.username, kit);
   } catch (_error) {
     showCheckoutSigninPrompt();
     return;
