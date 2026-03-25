@@ -17,7 +17,7 @@ async function hydrateAuthNav() {
       return;
     }
 
-    authNavLink.textContent = `Gday ${payload.username}`;
+    authNavLink.textContent = `G'day ${payload.username}`;
     authNavLink.href = '/';
   } catch (_error) {
     // Keep default Sign In CTA if session lookup fails.
