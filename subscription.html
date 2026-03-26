@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subscription | NetherPunch Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/public/css/subscription.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout subscription-layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <a class="brand-icon" href="https://discord.com/invite/pn6TtyW4Rf" target="_blank" rel="noopener noreferrer" aria-label="Join NetherPunch Discord"><img class="brand-icon-logo" src="https://cdn.simpleicons.org/discord/ffffff" alt="" aria-hidden="true" /></a>
+          <a href="/">Home</a>
+          <a href="/ozrust">OzRust</a>
+          <a href="/rustygoose">RustyGoose</a>
+        </nav>
+
+        <a class="logo-block" href="/">NETHERPUNCH</a>
+
+        <div class="right-nav">
+          <a class="btn btn-ghost" id="authNavLink" href="/signin">Sign In</a>
+        </div>
+      </header>
+
+      <section class="subscription-shell" id="subscriptionShell" hidden>
+        <div class="subscription-media-wrap">
+          <img id="kitImage" class="subscription-media" src="" alt="" />
+        </div>
+
+        <article class="subscription-content">
+          <p class="subscription-tag" id="kitServer"></p>
+          <h1 id="kitTitle"></h1>
+          <p id="kitDescription" class="subscription-description"></p>
+
+          <div class="subscription-price-row">
+            <p class="subscription-price" id="kitPrice"></p>
+            <button class="btn btn-ghost" id="addToCartBtn">Go to secure checkout</button>
+          </div>
+
+
+
+          <div class="checkout-signin-prompt" id="checkoutSigninPrompt" hidden>
+            <p>You need to sign in before continuing to secure checkout.</p>
+            <div class="checkout-signin-actions">
+              <a class="btn btn-ghost small" id="checkoutSigninLink" href="/signin">Sign in</a>
+              <button class="btn btn-ghost small" type="button" id="checkoutPromptClose">Cancel</button>
+            </div>
+          </div>
+
+          <h2>What this kit includes</h2>
+          <ul id="kitIncludes" class="subscription-includes"></ul>
+
+          <p class="subscription-note">Each kit uses its own dedicated checkout. Purchases are fulfilled by PayNow.gg, our authorized Merchant of Record.</p>
+        </article>
+      </section>
+
+      <p id="subscriptionStatus" class="subscription-status">Loading kit...</p>
+      <footer class="site-footer">
+        <p>© NETHERPUNCHGAMING 2026</p>
+        <div class="site-footer-links">
+          <a href="https://paynow.gg/user-agreement" target="_blank" rel="noopener noreferrer">User Agreement</a>
+          <a href="https://paynow.gg/terms-of-use" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+          <a href="https://paynow.gg/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        </div>
+      </footer>
+    </main>
+
+    <script src="/public/js/purchases.js"></script>
+    <script src="/public/js/subscription.js"></script>
+    <script src="/public/js/nav-auth.js"></script>
+  </body>
+</html>

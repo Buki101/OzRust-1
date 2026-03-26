@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player Profile | NetherPunch Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/public/css/player.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout player-layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <a class="brand-icon" href="https://discord.com/invite/pn6TtyW4Rf" target="_blank" rel="noopener noreferrer" aria-label="Join NetherPunch Discord"><img class="brand-icon-logo" src="https://cdn.simpleicons.org/discord/ffffff" alt="" aria-hidden="true" /></a>
+          <a href="/">Home</a>
+          <a href="/ozrust">OzRust</a>
+          <a href="/rustygoose">RustyGoose</a>
+        </nav>
+
+        <a class="logo-block" href="/">NETHERPUNCH</a>
+
+        <div class="right-nav">
+          <a class="btn btn-ghost" id="authNavLink" href="/signin">Sign In</a>
+        </div>
+      </header>
+
+      <section class="player-shell">
+        <a href="/leaderboard" class="back-link">← Back to leaderboard</a>
+        <p id="playerStatus" class="player-status">Loading player...</p>
+
+        <article id="playerCard" class="player-card" hidden>
+          <header class="player-header">
+            <h1 id="playerName">-</h1>
+            <p id="playerMeta">-</p>
+          </header>
+          <div class="stats-grid" id="statsGrid"></div>
+        </article>
+      </section>
+      <footer class="site-footer">
+        <p>© NETHERPUNCHGAMING 2026</p>
+        <div class="site-footer-links">
+          <a href="https://paynow.gg/user-agreement" target="_blank" rel="noopener noreferrer">User Agreement</a>
+          <a href="https://paynow.gg/terms-of-use" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+          <a href="https://paynow.gg/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        </div>
+      </footer>
+    </main>
+
+    <script src="/public/js/player.js"></script>
+    <script src="/public/js/auth.js"></script>
+    <script src="/public/js/nav-auth.js"></script>
+  </body>
+</html>

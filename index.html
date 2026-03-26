@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NetherPunch Gaming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <a class="brand-icon" href="https://discord.com/invite/pn6TtyW4Rf" target="_blank" rel="noopener noreferrer" aria-label="Join NetherPunch Discord"><img class="brand-icon-logo" src="https://cdn.simpleicons.org/discord/ffffff" alt="" aria-hidden="true" /></a>
+          <a href="/">Home</a>
+          <a href="/ozrust">OzRust</a>
+          <a href="/rustygoose">RustyGoose</a>
+        </nav>
+
+        <a class="logo-block" href="/">NETHERPUNCH</a>
+
+        <div class="right-nav">
+          <a class="btn btn-ghost" id="authNavLink" href="/signin">Sign In</a>
+        </div>
+      </header>
+
+      <section class="hero" id="top">
+        <div class="hero-overlay">
+          <p class="hero-kicker">Welcome to</p>
+          <h1>NetherPunch Gaming</h1>
+          <p class="hero-subtitle">The home of OzRust and RustyGoose</p>
+        </div>
+      </section>
+
+      <section class="feature-cards">
+        <a class="info-card info-link" href="/ozrust">
+          <div>
+            <h2>OzRust</h2>
+            <p>Browse all OzRust kits on the dedicated page.</p>
+          </div>
+        </a>
+        <a class="info-card info-link" href="/rustygoose">
+          <div>
+            <h2>RustyGoose</h2>
+            <p>Jump into RustyGoose kits and softcore progression options.</p>
+          </div>
+        </a>
+        <a class="info-card info-link" href="/account">
+          <div>
+            <h2>Account</h2>
+            <p>Sign in to access purchases, kit details, and profile pages.</p>
+          </div>
+        </a>
+      </section>
+
+      <section class="products">
+        <div class="section-title-row">
+          <h3>Featured Kits</h3>
+        </div>
+
+        <div class="server-kit-grid">
+          <section class="server-kits">
+            <h4>OzRust</h4>
+            <div class="product-grid">
+              <a class="product-card product-link" href="/subscription/ozrust-crocodile">
+                <img src="https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1000&q=80" alt="OzRust Crocodile kit" />
+                <div class="product-content">
+                  <p class="product-name">Crocodile Kit</p>
+                  <p class="product-price">20.00 USD</p>
+                </div>
+              </a>
+              <a class="product-card product-link" href="/subscription/ozrust-shark">
+                <img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=1000&q=80" alt="OzRust Shark kit" />
+                <div class="product-content">
+                  <p class="product-name">Shark Kit</p>
+                  <p class="product-price">15.00 USD</p>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <section class="server-kits">
+            <h4>RustyGoose</h4>
+            <div class="product-grid">
+              <a class="product-card product-link" href="/subscription/rustygoose-chad">
+                <img src="https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose Chad kit" />
+                <div class="product-content">
+                  <p class="product-name">Chad Kit</p>
+                  <p class="product-price">30.00 USD</p>
+                </div>
+              </a>
+              <a class="product-card product-link" href="/subscription/rustygoose-roam">
+                <img src="https://images.unsplash.com/photo-1601758260892-ae5f83368a3f?auto=format&fit=crop&w=1000&q=80" alt="RustyGoose Roam kit" />
+                <div class="product-content">
+                  <p class="product-name">Roam Kit</p>
+                  <p class="product-price">15.00 USD</p>
+                </div>
+              </a>
+            </div>
+          </section>
+        </div>
+
+        <p class="footnote">Kits are fulfilled by PayNow.gg, our authorized reseller and official Merchant of Record.</p>
+      </section>
+      <footer class="site-footer">
+        <p>© NETHERPUNCHGAMING 2026</p>
+        <div class="site-footer-links">
+          <a href="https://paynow.gg/user-agreement" target="_blank" rel="noopener noreferrer">User Agreement</a>
+          <a href="https://paynow.gg/terms-of-use" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+          <a href="https://paynow.gg/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        </div>
+      </footer>
+    </main>
+
+    <script src="/public/js/nav-auth.js"></script>
+  </body>
+</html>
