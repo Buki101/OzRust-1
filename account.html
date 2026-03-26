@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account | NetherPunch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/public/css/account.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <main class="layout account-layout">
+      <header class="top-nav">
+        <nav class="left-nav" aria-label="Primary">
+          <a class="brand-icon" href="https://discord.com/invite/pn6TtyW4Rf" target="_blank" rel="noopener noreferrer" aria-label="Join NetherPunch Discord"><img class="brand-icon-logo" src="https://cdn.simpleicons.org/discord/ffffff" alt="" aria-hidden="true" /></a>
+          <a href="/">Home</a>
+          <a href="/ozrust">OzRust</a>
+          <a href="/rustygoose">RustyGoose</a>
+        </nav>
+
+        <a class="logo-block" href="/">NETHERPUNCH</a>
+
+        <div class="right-nav">
+          <a class="btn btn-ghost" id="authNavLink" href="/signin">Sign In</a>
+        </div>
+      </header>
+
+      <section class="account-shell">
+        <div class="account-head-row">
+          <div class="account-head">
+            <h1>Your Account</h1>
+            <p id="accountSubhead">Signed in</p>
+          </div>
+          <button class="btn btn-ghost" id="signOutBtn" type="button">Sign Out</button>
+        </div>
+
+        <div class="purchases-panel">
+          <div class="panel-head">
+            <h2>Active Kits</h2>
+          </div>
+          <p id="activeStatus" class="account-status">Loading active kits...</p>
+          <div class="table-wrap" id="activeWrap" hidden>
+            <table>
+              <thead>
+                <tr>
+                  <th>Started</th>
+                  <th>Server</th>
+                  <th>Kit</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="activeBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="purchases-panel">
+          <div class="panel-head">
+            <h2>Purchase History</h2>
+            <button id="clearPurchasesBtn" class="btn btn-ghost small" type="button">Clear demo purchases</button>
+          </div>
+          <p id="historyStatus" class="account-status">Loading purchase history...</p>
+          <div class="table-wrap" id="purchasesWrap" hidden>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Server</th>
+                  <th>Kit</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="purchasesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <footer class="site-footer">
+        <p>© NETHERPUNCHGAMING 2026</p>
+        <div class="site-footer-links">
+          <a href="https://paynow.gg/user-agreement" target="_blank" rel="noopener noreferrer">User Agreement</a>
+          <a href="https://paynow.gg/terms-of-use" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+          <a href="https://paynow.gg/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        </div>
+      </footer>
+    </main>
+
+    <script src="/public/js/purchases.js"></script>
+    <script src="/public/js/account.js"></script>
+    <script src="/public/js/auth.js"></script>
+    <script src="/public/js/nav-auth.js"></script>
+  </body>
+</html>
