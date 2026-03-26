@@ -145,11 +145,17 @@ body {
 }
 
 .logo-block {
+  display: inline-block;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: #d0def6;
+  text-decoration: none;
   text-shadow: 0 1px 14px rgba(242, 180, 121, 0.2);
+}
+
+.logo-block:hover {
+  color: #f5f8ff;
 }
 
 .btn {

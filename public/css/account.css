@@ -1,9 +1,19 @@
 .account-layout {
   min-height: 86vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .account-shell {
   padding: 2rem;
+  flex: 1;
+}
+
+.account-head-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .account-head h1 {
@@ -22,6 +32,10 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 1rem;
+}
+
+.account-layout .site-footer {
+  margin-top: auto;
 }
 
 .panel-head {
@@ -74,6 +88,11 @@ td {
   }
 
   .panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .account-head-row {
     flex-direction: column;
     align-items: flex-start;
   }
