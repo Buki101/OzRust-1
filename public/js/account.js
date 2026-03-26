@@ -6,6 +6,8 @@ const activeBody = document.getElementById('activeBody');
 const purchasesWrap = document.getElementById('purchasesWrap');
 const purchasesBody = document.getElementById('purchasesBody');
 const clearPurchasesBtn = document.getElementById('clearPurchasesBtn');
+const authNavLink = document.getElementById('authNavLink');
+const AUTH_USERNAME_KEY = 'ozrust_auth_username';
 
 function formatDate(value) {
   const date = new Date(value);
@@ -40,6 +42,15 @@ async function loadAccount() {
 
     const username = payload.username;
     accountSubhead.textContent = `G'day ${username}`;
+    if (authNavLink) {
+      authNavLink.textContent = `G'day ${username}`;
+      authNavLink.href = '/account';
+    }
+    try {
+      localStorage.setItem(AUTH_USERNAME_KEY, username);
+    } catch (_error) {
+      // Ignore local storage failures and continue rendering account data.
+    }
 
     const allEntries = window.ozPurchases?.readPurchases?.() || [];
     const entries = allEntries.filter((entry) => entry.username === username);
