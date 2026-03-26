@@ -13,6 +13,10 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -80,6 +84,7 @@ body {
 
 .right-nav {
   justify-content: flex-end;
+  min-width: 170px;
 }
 
 .left-nav a,
@@ -158,6 +163,12 @@ body {
   border-radius: 10px;
   text-decoration: none;
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+#authNavLink {
+  min-width: 124px;
+  display: inline-flex;
+  justify-content: center;
 }
 
 .btn:hover {
