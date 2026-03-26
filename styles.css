@@ -337,19 +337,13 @@ h3 {
 }
 
 .ozrust-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
 .rustygoose-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-}
-
-@media (max-width: 1380px) {
-  .ozrust-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 .product-link {
