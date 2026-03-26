@@ -253,6 +253,10 @@ app.get('/rustygoose', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'rustygoose.html'));
 });
 
+app.get('/goose-faq', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'goose-faq.html'));
+});
+
 app.get('/subscription/:kitId', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'subscription.html'));
 });
