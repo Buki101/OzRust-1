@@ -23,6 +23,11 @@ const CHECKOUT_LINKS = {
   'rustygoose-grub': ''
 };
 
+const KIT_IMAGE_OVERRIDES = {
+  // Owner-uploaded assets: drop files in /public/images/kits/
+  'ozrust-crocodile': '/public/images/kits/ozrust-crocodile.jpg'
+};
+
 const kits = {
   'ozrust-quarry': {
     server: 'OzRust',
@@ -249,8 +254,17 @@ if (checkoutPromptClose && checkoutSigninPrompt) {
   });
 }
 
-function renderKit(kit) {
-  kitImage.src = kit.image;
+function renderKit(kitId, kit) {
+  const preferredImage = KIT_IMAGE_OVERRIDES[kitId];
+  const fallbackImage = kit.image;
+  kitImage.src = preferredImage || fallbackImage;
+  kitImage.onerror = () => {
+    if (kitImage.src !== fallbackImage) {
+      kitImage.src = fallbackImage;
+      return;
+    }
+    kitImage.onerror = null;
+  };
   kitImage.alt = kit.title;
   kitServer.textContent = kit.server;
   kitTitle.textContent = kit.title;
@@ -301,5 +315,5 @@ const kit = kits[getKitId()];
 if (!kit) {
   statusEl.textContent = 'Kit not found.';
 } else {
-  renderKit(kit);
+  renderKit(getKitId(), kit);
 }
