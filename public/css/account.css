@@ -1,0 +1,99 @@
+.account-layout {
+  min-height: 86vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.account-shell {
+  padding: 2rem;
+  flex: 1;
+}
+
+.account-head-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.account-head h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.account-head p {
+  margin: 0.5rem 0 0;
+  color: #aab2c3;
+}
+
+.purchases-panel {
+  margin-top: 1.25rem;
+  background: linear-gradient(180deg, rgba(17, 22, 30, 0.9), rgba(11, 15, 22, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.account-layout .site-footer {
+  margin-top: auto;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.account-status {
+  color: #aab2c3;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+}
+
+th,
+td {
+  padding: 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+th {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #b8c1d3;
+}
+
+td {
+  color: #e7ebf3;
+}
+
+@media (max-width: 700px) {
+  .account-shell {
+    padding: 1rem;
+  }
+
+  .panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .account-head-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
