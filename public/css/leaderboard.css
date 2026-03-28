@@ -1,0 +1,95 @@
+.leaderboard-layout {
+  min-height: 90vh;
+}
+
+.leaderboard-shell {
+  padding: 20px;
+}
+
+.leaderboard-head {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.leaderboard-title {
+  margin: 0;
+  font-size: 36px;
+}
+
+.leaderboard-select-wrap {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: #c8d4ea;
+}
+
+.leaderboard-select {
+  min-width: 220px;
+  background: rgba(8, 14, 24, 0.92);
+  color: #e9eef9;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.leaderboard-status {
+  margin: 0 0 12px;
+  color: #a8b6ce;
+}
+
+.table-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  text-align: left;
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.leaderboard-table tbody tr {
+  cursor: pointer;
+}
+
+.leaderboard-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.leaderboard-table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9cafcd;
+  background: rgba(9, 16, 27, 0.9);
+}
+
+.value-col {
+  font-weight: 700;
+  color: #e8f1ff;
+}
+
+@media (max-width: 900px) {
+  .leaderboard-head {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .leaderboard-table {
+    min-width: 760px;
+  }
+}
